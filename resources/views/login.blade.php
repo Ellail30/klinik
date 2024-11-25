@@ -105,22 +105,21 @@
 <body>
     <h1 class="login-title">Login</h1>
     <div class="wrapper">
-        <form action="">
-            <div class="input-box">
-                <input type="text" placeholder="Username" required>
-                <i class='bx bxs-user'></i>
-            </div>
-            <div class="input-box">
-                <input type="text" placeholder="Jabatan" required>
-                <i class='bx bxs-user-account'></i>
-            </div>
-            <div class="input-box">
-                <input type="password" placeholder="Password" required>
-                <i class='bx bxs-lock-alt'></i>
-            </div>
-            <button type="submit" class="btn">Login</button>
-        </form>
+        @if ($errors->has('login_error'))
+        <p style="color: red">{{ $errors->first('login_error') }}</p>
+    @endif
+    <form action="{{ route('login') }}" method="POST">
+        @csrf
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
     </div>
 </body>
-
 </html>

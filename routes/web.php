@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,12 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/dashboard', function () {
-    return view('dashboard'); //mengarahkan ke halaman dashboard
-});
+    return view('dashboard'); // Mengarahkan ke halaman dashboard
+})->name('dashboard');
+
 Route::get('/obat', function () {
     return view('obat'); // Mengarahkan ke halaman obat
 });
@@ -51,5 +53,6 @@ Route::get('/laporan_persediaan', function () {
     return view('laporan_persediaan'); // Mengarahkan ke halaman laporan persediaan
 });
 
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
