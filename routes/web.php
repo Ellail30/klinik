@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ObatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,10 +25,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', function () {
     return view('dashboard'); // Mengarahkan ke halaman dashboard
 })->name('dashboard');
+Route::resource('obat', ObatController::class);
 
-Route::get('/obat', function () {
-    return view('obat'); // Mengarahkan ke halaman obat
-});
+Route::get('/obat', [ObatController::class, 'index']);
+Route::delete('/obat/{id}', [ObatController::class, 'destroy'])->name('obat.destroy');
+Route::post('/obat/store', [ObatController::class, 'store']);
+Route::get('/obat/edit/{id}', [ObatController::class, 'edit'])->name('obat.edit');
+Route::put('/obat/update/{id}', [ObatController::class, 'update'])->name('obat.update');
+
+
 
 Route::get('/pasien', function () {
     return view('pasien'); // Mengarahkan ke halaman pasien
