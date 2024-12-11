@@ -131,7 +131,7 @@
                 <a href="{{ url('/obat') }}">
                     <i class='bx bxs-capsule'></i> Obat
                 </a>
-                <a href="{{ url('/supplier') }}">
+                <a href="#">
                     <i class='bx bx-cart-alt'></i> Supplier
                 </a>
                 <a href="{{ url('/pasien') }}">
