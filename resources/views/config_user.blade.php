@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Pasien')
+@section('title', 'Daftar User')
 
 @section('content')
     <div class="p-4 sm:ml-64">
@@ -9,15 +9,15 @@
             <div class="btn-tambah mb-3">
                 <!-- Tombol untuk menambah obat yang membuka modal -->
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahObatModal">
-                    <i class='bx bx-plus'></i> Tambah Pasien
+                    <i class='bx bx-plus'></i> Tambah User
                 </button>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <form action="{{ url('/pasien') }}" method="GET">
+                    <form action="{{ url('/config_user') }}" method="GET">
                         <div class="input-group">
                             <input class="form-control me-2" type="search" name="search"
-                                placeholder="Cari berdasarkan satuan atau kode Pasien" aria-label="Search"
+                                placeholder="Cari berdasarkan satuan atau kode User" aria-label="Search"
                                 value="{{ request('search') }}">
                             <button class="btn btn-outline-primary" type="submit">Cari</button>
                         </div>
@@ -30,23 +30,18 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>NIK</th>
-                        <th>NRM</th>
-                        <th>Nama Pasien</th>
-                        <th>Umur</th>
-                        <th>Alamat</th>
-                        <th>Aksi</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Password</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{-- @foreach ($supplier as $item) --}}
                     <tr>
                         <td>1</td>
-                        <td>3021036524987</td>
-                        <td>50419121</td>
-                        <td>Adella</td>
-                        <td>23</td>
-                        <td>Kalipentung</td>
+                        <td>Adellakusayang123</td>
+                        <td>Pimpinan</td>
+                        <td>Password123.</td>
                         {{-- <td>
                             <!-- Tombol Edit -->
                             <button class="action-btn edit-btn" data-bs-toggle="modal"

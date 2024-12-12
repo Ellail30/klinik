@@ -37,7 +37,7 @@
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Dashboard</a>
                         </li>
                         <li>
-                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Config User</a>
+                            <a href="{{ url('/config_user') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Config User</a>
                         </li>
                     </ul>
                 </li>
@@ -57,7 +57,7 @@
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Obat</a>
                         </li>
                         <li>
-                            <a href="#" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Supplier</a>
+                            <a href="{{ url('/supplier') }}" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Supplier</a>
                         </li>
                         <li>
                             <a href="{{ url('/pasien') }}"

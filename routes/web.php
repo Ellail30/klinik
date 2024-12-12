@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ObatController;
+use App\Http\Controllers\SupplierController;
+
 
 
 /*
@@ -25,16 +27,22 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', function () {
     return view('dashboard'); // Mengarahkan ke halaman dashboard
 })->name('dashboard');
-Route::resource('obat', ObatController::class);
 
+Route::resource('obat', ObatController::class);
 Route::get('/obat', [ObatController::class, 'index']);
 Route::delete('/obat/{id}', [ObatController::class, 'destroy'])->name('obat.destroy');
 Route::post('/obat/store', [ObatController::class, 'store'])->name('obat.store');;
 Route::get('/obat/edit/{id}', [ObatController::class, 'edit'])->name('obat.edit');
 Route::put('/obat/update/{id}', [ObatController::class, 'update'])->name('obat.update');
 
-Route::get('/supplier', function () {
-    return view('supplier'); // Mengarahkan ke halaman supplier
+Route::resource('supplier', SupplierController::class);
+Route::get('supplier', [SupplierController::class, 'index']);Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
+Route::post('/supplier/store', [SupplierController::class, 'store'])->name('supplier.store');;
+Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
+Route::put('/supplier/update/{id}', [SupplierController::class, 'update'])->name('supplier.update');
+
+Route::get('/config_user', function () {
+    return view('config_user'); // Mengarahkan ke halaman User
 });
 
 Route::get('/pasien', function () {

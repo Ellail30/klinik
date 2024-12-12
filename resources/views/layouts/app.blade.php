@@ -109,21 +109,21 @@
     </style>
 </head>
 
+
 <body>
+    <nav>
+        @include('layouts.navbar')
+    </nav>
     <div class="container-fluid">
+
         <div class="row">
             <!-- Sidebar -->
-            @include('layouts.navbar')
-
             @include('layouts.sidebar')
         </div>
         <!-- Konten -->
         @yield('content')
     </div>
-    </div>
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
