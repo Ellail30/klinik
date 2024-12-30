@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ObatController;
+use App\Http\Controllers\ObatMasukController;
+use App\Http\Controllers\PasienController;
 use App\Http\Controllers\SupplierController;
 
 
@@ -18,9 +21,8 @@ use App\Http\Controllers\SupplierController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('landingpage');
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -45,13 +47,23 @@ Route::get('/config_user', function () {
     return view('config_user'); // Mengarahkan ke halaman User
 });
 
-Route::get('/pasien', function () {
-    return view('pasien'); // Mengarahkan ke halaman pasien
-});
+Route::resource('pasien', PasienController::class);
+Route::get('pasien', [PasienController::class, 'index']);Route::delete('/pasien/{id}', [PasienController::class, 'destroy'])->name('pasien.destroy');
+Route::post('/pasien/store', [PasienController::class, 'store'])->name('pasien.store');;
+Route::get('/pasien/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
+Route::put('/pasien/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
+
 
 Route::get('/obat_keluar', function () {
     return view('obat_keluar'); // Mengarahkan ke halaman obat keluar
 });
+
+Route::resource('det_transaksi_pembelian', ObatMasukController::class)->parameters(['det_transaksi_pembelian' => 'NoDetBeli']);
+Route::get('obatmasuk', [ObatMasukController::class, 'index']);Route::delete('/obatmasuk/{id}', [ObatMasukController::class, 'destroy'])->name('obatmasuk.destroy');
+Route::post('/obatmasuk', [ObatMasukController::class, 'store'])->name('obatmasuk.store');
+Route::get('/obatmasuk/edit/{id}', [ObatMasukController::class, 'edit'])->name('obatmasuk.edit');
+Route::put('/obatmasuk/update/{id}', [ObatMasukController::class, 'update'])->name('obatmasuk.update');
+
 
 Route::get('/obat_kadaluwarsa', function () {
     return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa

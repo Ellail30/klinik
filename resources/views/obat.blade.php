@@ -3,85 +3,126 @@
 @section('title', 'Daftar Obat')
 
 @section('content')
-<div class="p-4 sm:ml-64">
-    <div class="content-table">
-        <!-- Tombol Tambah -->
-        <div class="btn-tambah mb-3">
-            <!-- Tombol untuk menambah obat yang membuka modal -->
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahObatModal">
-                <i class='bx bx-plus'></i> Tambah Obat
-            </button>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <form action="{{ url('/obat') }}" method="GET">
-                    <div class="input-group">
-                        <input class="form-control me-2" type="search" name="search"
-                            placeholder="Cari berdasarkan satuan atau kode obat" aria-label="Search" value="{{ request('search') }}">
-                        <button class="btn btn-outline-primary" type="submit">Cari</button>
-                    </div>
-                </form>
+    <div class="p-4 sm:ml-64">
+        <div class="content-table">
+            <!-- Tombol Tambah -->
+            <div class="btn-tambah mb-3">
+                <!-- Tombol untuk menambah obat yang membuka modal -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahObatModal">
+                    <i class='bx bx-plus'></i> Tambah Obat
+                </button>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form action="{{ url('/obat') }}" method="GET">
+                        <div class="input-group">
+                            <input class="form-control me-2" type="search" name="search"
+                                placeholder="Cari berdasarkan satuan atau kode obat" aria-label="Search"
+                                value="{{ request('search') }}">
+                            <button class="btn btn-outline-primary" type="submit">Cari</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabel Obat -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kode Obat</th>
+                        <th>Nama Obat</th>
+                        <th>Satuan</th>
+                        <th>Stok</th>
+                        <th>TglExp</th>
+                        <th>NoBatch</th>
+                        <th>Harga Beli</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($obat as $item)
+                        <tr>
+                            <td>{{ $obat->firstItem() + $loop->index }}</td>
+                            <td>{{ $item->id_obat }}</td>
+                            <td>{{ $item->NamaObat }}</td>
+                            <td>{{ $item->Satuan }}</td>
+                            <td>{{ $item->stok }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->TglExp)->format('d/m/Y') }}</td>
+                            <td>{{ $item->NoBatch }}</td>
+                            <td>{{ $item->HargaBeli }}</td>
+                            <td>
+                                <!-- Tombol Edit -->
+                                <button class="action-btn edit-btn" data-bs-toggle="modal" data-bs-target="#editObatModal"
+                                    data-id="{{ $item->id_obat }}">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+
+                                <!-- Tombol Delete -->
+                                <form action="{{ route('obat.destroy', $item->id_obat) }}" method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="action-btn delete-btn" data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal" data-id="{{ $item->id_obat }}">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </form>
+
+                                <!-- Modal Konfirmasi Hapus -->
+                                <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
+                                    aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Penghapusan
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Apakah Anda yakin ingin menghapus obat ini?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-danger"
+                                                    data-bs-dismiss="modal">Tidak</button>
+                                                <form id="deleteForm" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-outline-success" type="submit">Ya</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // Menangkap tombol hapus dan mengupdate action form
+                                    var deleteBtns = document.querySelectorAll('.delete-btn');
+                                    deleteBtns.forEach(function(btn) {
+                                        btn.addEventListener('click', function(event) {
+                                            var obatId = event.target.closest('button').getAttribute('data-id');
+                                            var form = document.getElementById('deleteForm');
+                                            form.action = '/obat/' + obatId;
+                                        });
+                                    });
+                                </script>
+
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                {{ $obat->links('pagination::bootstrap-4') }}
             </div>
         </div>
-
-        <!-- Tabel Obat -->
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Kode Obat</th>
-                    <th>Nama Obat</th>
-                    <th>Satuan</th>
-                    <th>Stok</th>
-                    <th>TglExp</th>
-                    <th>NoBatch</th>
-                    <th>Harga Beli</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($obat as $item)
-                    <tr>
-                        <td>{{ $obat->firstItem() + $loop->index }}</td>
-                        <td>{{ $item->id_obat }}</td>
-                        <td>{{ $item->NamaObat }}</td>
-                        <td>{{ $item->Satuan }}</td>
-                        <td>{{ $item->stok }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->TglExp)->format('d/m/Y') }}</td>
-                        <td>{{ $item->NoBatch }}</td>
-                        <td>{{ $item->HargaBeli }}</td>
-                        <td>
-                            <!-- Tombol Edit -->
-                            <button class="action-btn edit-btn" data-bs-toggle="modal"
-                                data-bs-target="#editObatModal" data-id="{{ $item->id_obat }}">
-                                <i class='bx bx-edit'></i>
-                            </button>
-
-                            <!-- Tombol Delete -->
-                            <form action="{{ route('obat.destroy', $item->id_obat) }}" method="POST"
-                                style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="action-btn delete-btn">
-                                    <i class='bx bx-trash'></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="pagination-container">
-            {{ $obat->links('pagination::bootstrap-4') }}
-        </div>
     </div>
-</div>
 
     <!-- Modal Tambah Obat -->
-    <div class="modal fade" id="tambahObatModal" tabindex="-1" aria-labelledby="tambahObatModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="tambahObatModal" tabindex="-1" aria-labelledby="tambahObatModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -123,15 +164,14 @@
                             <label for="HargaBeli" class="form-label">Harga Beli</label>
                             <input type="number" class="form-control" id="HargaBeli" name="HargaBeli" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button class="btn btn-outline-primary" type="submit">Simpan</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal Edit Obat -->
-    <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -145,8 +185,8 @@
 
                         <div class="mb-3">
                             <label for="id_obat" class="form-label">Kode Obat</label>
-                            <input type="text" class="form-control" id="id_obat" name="id_obat" required
-                                disabled value="{{ old('id_obat', $item->id_obat ?? '') }}">
+                            <input type="text" class="form-control" id="id_obat" name="id_obat" required disabled
+                                value="{{ old('id_obat', $item->id_obat ?? '') }}">
                         </div>
                         <div class="mb-3">
                             <label for="NamaObat" class="form-label">Nama Obat</label>
@@ -181,7 +221,7 @@
                             <input type="number" class="form-control" id="HargaBeli" name="HargaBeli"
                                 value="{{ $item->HargaBeli }}" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <button class="btn btn-outline-primary" type="submit">Simpan perubahan</button>
                     </form>
                 </div>
             </div>

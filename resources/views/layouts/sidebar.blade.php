@@ -12,12 +12,12 @@
 <div class="flex flex-col sm:flex-row min-h-screen">
     <!-- Sidebar -->
     <aside id="default-sidebar"
-        class="fixed sm:relative w-64 sm:w-72 bg-blue-600 text-white shadow-lg sm:translate-x-0 transform transition-transform duration-300 z-50 h-full overflow-y-auto">
+        class="fixed sm:relative w-64 sm:w-72 bg-blue-500 text-white shadow-lg sm:translate-x-0 transform transition-transform duration-300 z-50 h-full overflow-y-auto">
         <div class="h-full flex flex-col px-6 py-4">
             <!-- Logo and Title -->
             <div class="flex items-center space-x-3 mb-6">
                 <img src="images/clinic.png" alt="clinic logo" class="w-20 h-20 rounded-full shadow-md">
-                <h1 class="text-xl font-semibold">Klinik Ella</h1>
+                <h1 class="text-xl font-semibold">Klinik PKU Berbah</h1>
             </div>
             <!-- Navigation -->
             <ul class="space-y-4 font-medium">
@@ -63,15 +63,24 @@
                             <a href="{{ url('/pasien') }}"
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Pasien</a>
                         </li>
+                        <li>
+                            <a href="{{ url('/obatmasuk') }}"
+                                class="block px-4 py-2 rounded-lg hover:bg-blue-700">Obat Masuk</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/obatkeluar') }}"
+                                class="block px-4 py-2 rounded-lg hover:bg-blue-700">Obat Keluar</a>
+                        </li>
                     </ul>
                 </li>
+                
                 <!-- Reports Section -->
                 <li>
                     <button
                         class="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-blue-700 focus:outline-none transition">
                         <span class="flex items-center space-x-3">
                             <i class='bx bxs-file text-2xl'></i>
-                            <span class="text-base">Reports</span>
+                            <span class="text-base">Laporan</span>
                         </span>
                         <i class='bx bx-chevron-down'></i>
                     </button>
@@ -96,7 +105,7 @@
                         class="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-blue-700 focus:outline-none transition">
                         <span class="flex items-center space-x-3">
                             <i class='bx bxs-lock-alt text-2xl'></i>
-                            <span class="text-base">Account</span>
+                            <span class="text-base">Akun</span>
                         </span>
                         <i class='bx bx-chevron-down'></i>
                     </button>
