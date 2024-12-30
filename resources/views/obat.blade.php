@@ -7,7 +7,6 @@
         <div class="content-table">
             <!-- Tombol Tambah -->
             <div class="btn-tambah mb-3">
-                <!-- Tombol untuk menambah obat yang membuka modal -->
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahObatModal">
                     <i class='bx bx-plus'></i> Tambah Obat
                 </button>
@@ -59,55 +58,9 @@
                                 </button>
 
                                 <!-- Tombol Delete -->
-                                <form action="{{ route('obat.destroy', $item->id_obat) }}" method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="action-btn delete-btn" data-bs-toggle="modal"
-                                        data-bs-target="#confirmDeleteModal" data-id="{{ $item->id_obat }}">
-                                        <i class='bx bx-trash'></i>
-                                    </button>
-                                </form>
-
-                                <!-- Modal Konfirmasi Hapus -->
-                                <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
-                                    aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Penghapusan
-                                                </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Apakah Anda yakin ingin menghapus obat ini?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-danger"
-                                                    data-bs-dismiss="modal">Tidak</button>
-                                                <form id="deleteForm" method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-outline-success" type="submit">Ya</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <script>
-                                    // Menangkap tombol hapus dan mengupdate action form
-                                    var deleteBtns = document.querySelectorAll('.delete-btn');
-                                    deleteBtns.forEach(function(btn) {
-                                        btn.addEventListener('click', function(event) {
-                                            var obatId = event.target.closest('button').getAttribute('data-id');
-                                            var form = document.getElementById('deleteForm');
-                                            form.action = '/obat/' + obatId;
-                                        });
-                                    });
-                                </script>
-
+                                <button type="button" class="action-btn delete-btn" data-id="{{ $item->id_obat }}" data-nama="{{ $item->NamaObat }}">
+                                    <i class='bx bx-trash'></i>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -157,7 +110,7 @@
                             <input type="date" class="form-control" id="TglEXP" name="TglEXP" required>
                         </div>
                         <div class="mb-3">
-                            <label for="stok" class="form-label">NoBatch</label>
+                            <label for="NoBatch" class="form-label">NoBatch</label>
                             <input type="text" class="form-control" id="NoBatch" name="NoBatch" required>
                         </div>
                         <div class="mb-3">
@@ -170,6 +123,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal Edit Obat -->
     <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -181,8 +135,7 @@
                 <div class="modal-body">
                     <form action="{{ route('obat.update', $item->id_obat) }}" method="POST">
                         @csrf
-                        @method('PUT') <!-- Menentukan request menggunakan method PUT -->
-
+                        @method('PUT')
                         <div class="mb-3">
                             <label for="id_obat" class="form-label">Kode Obat</label>
                             <input type="text" class="form-control" id="id_obat" name="id_obat" required disabled
@@ -228,6 +181,57 @@
         </div>
     </div>
 
+    <!-- Sertakan SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const obatId = this.getAttribute('data-Id');
+                const namaObat = this.getAttribute('data-nama');
+
+                Swal.fire({
+                    title: 'Konfirmasi Penghapusan',
+                    text: `Apakah Anda yakin ingin menghapus obat "${namaObat}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/obat/${obatId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        }).then(data => {
+                            Swal.fire(
+                                'Berhasil!',
+                                `Obat "${namaObat}" telah dihapus.`,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        }).catch(error => {
+                            Swal.fire(
+                                'Gagal!',
+                                `Terjadi kesalahan: ${error.message}`,
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
 
     <!-- Sertakan JS untuk modal dan interaksi lainnya -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
