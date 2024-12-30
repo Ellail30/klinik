@@ -31,14 +31,15 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::resource('obat', ObatController::class);
-Route::get('/obat', [ObatController::class, 'index']);
+Route::get('/obat', [ObatController::class, 'index'])->name('obat.index');
 Route::delete('/obat/{id}', [ObatController::class, 'destroy'])->name('obat.destroy');
 Route::post('/obat/store', [ObatController::class, 'store'])->name('obat.store');;
 Route::get('/obat/edit/{id}', [ObatController::class, 'edit'])->name('obat.edit');
 Route::put('/obat/update/{id}', [ObatController::class, 'update'])->name('obat.update');
 
 Route::resource('supplier', SupplierController::class);
-Route::get('supplier', [SupplierController::class, 'index']);Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
+Route::get('supplier', [SupplierController::class, 'index']);
+Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 Route::post('/supplier/store', [SupplierController::class, 'store'])->name('supplier.store');;
 Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
 Route::put('/supplier/update/{id}', [SupplierController::class, 'update'])->name('supplier.update');

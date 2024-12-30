@@ -7,28 +7,77 @@ use Illuminate\Http\Request;
 
 class ObatController extends Controller
 {
-    public function index(Request $request)
-    {
-        $search = $request->input('search'); // Menggunakan method input()
-        $obat = Obat::when($search, function ($query, $search) {
-            return $query->where('Satuan', 'like', '%' . $search . '%');
-        })->paginate(5);
+public function index(Request $request)
+{
+    $search = $request->input('search'); // Ambil input 'search'
+    $sortBy = $request->input('sort_by'); // Ambil input 'sort_by'
 
-        // Kirim data obat ke view
-        return view('obat', compact('obat'));
+    $obat = Obat::query();
+
+    // If search term is provided
+    if ($search) {
+        $searchTerms = explode(' ', $search); // Split the search input by space to handle multiple words
+
+        foreach ($searchTerms as $term) {
+            // Apply the search condition for each term (word)
+            $obat = $obat->where(function ($query) use ($term) {
+                $query->where('NamaObat', 'like', '%' . $term . '%')
+                      ->orWhere('id_obat', 'like', '%' . $term . '%')
+                      ->orWhere('NoBatch', 'like', '%' . $term . '%');
+            });
+        }
     }
+
+    // Sorting berdasarkan kolom yang dipilih
+    if ($sortBy) {
+        switch ($sortBy) {
+            case 'NamaObat_asc':
+                $obat = $obat->orderBy('NamaObat', 'asc'); // Urutkan Nama Obat A-Z
+                break;
+            case 'NamaObat_desc':
+                $obat = $obat->orderBy('NamaObat', 'desc'); // Urutkan Nama Obat Z-A
+                break;
+            case 'TglExp_asc':
+                // Urutkan berdasarkan tanggal kedaluwarsa terdekat ke sekarang
+                $obat = $obat->orderByRaw('ABS(DATEDIFF(TglExp, CURDATE())) asc');
+                break;
+            case 'HargaBeli_asc':
+                $obat = $obat->orderBy('HargaBeli', 'asc'); // Urutkan berdasarkan Harga Termurah
+                break;
+            case 'HargaBeli_desc':
+                $obat = $obat->orderBy('HargaBeli', 'desc'); // Urutkan berdasarkan Harga Termahal
+                break;
+            case 'Satuan':
+                $obat = $obat->orderBy('Satuan', 'asc'); // Urutkan berdasarkan Satuan
+                break;
+        }
+    }
+
+    // Paginate hasil query
+    $obat = $obat->paginate(5);
+
+    return view('obat', compact('obat', 'search', 'sortBy'));
+}
+
+
+
+
 
     public function destroy($id)
     {
-        // Temukan obat berdasarkan ID
-        $obat = Obat::findOrFail($id);
+        // Ambil data obat berdasarkan ID
+        $obat = Obat::find($id);
 
-        // Hapus obat dari database
-        $obat->delete();
+        if ($obat) {
+            $obatName = $obat->NamaObat;
+            $obat->delete();  // Hapus obat
 
-        // Redirect kembali dengan pesan sukses
-        return redirect('/obat')->with('success', 'Obat berhasil dihapus');
+            // Kembalikan ke halaman daftar obat dengan pesan sukses
+            return redirect()->route('obat.index')->with('success', "$obatName berhasil dihapus!");
+        }
+
     }
+
 
     // Method untuk menambah data obat
     public function store(Request $request)
@@ -56,29 +105,36 @@ class ObatController extends Controller
         // Ambil data obat berdasarkan ID
         $obat = Obat::findOrFail($id);
 
-        // Kirim data ke view modal
-        return view('obat.edit', compact('obat'));
+        // Kembalikan data obat dalam format JSON
+        return response()->json($obat);
     }
 
     public function update(Request $request, $id)
     {
         // Validasi data
         $validatedData = $request->validate([
-            'NamaObat' => 'required|max:255',
-            'Satuan' => 'required|in:BOTOL,TUBE',
-            'stok' => 'required|integer|min:1',
-            'TglExp' => 'required|date',
-            'NoBatch' => 'required|max:255',
-            'HargaBeli' => 'required|numeric|min:0',
+            'NamaObat' => 'required|string',
+            'Satuan' => 'required|string',
+            'stok' => 'required|integer',
+            'TglEXP' => 'required|date',
+            'NoBatch' => 'required|string',
+            'HargaBeli' => 'required|numeric',
         ]);
 
-        // Cari data obat berdasarkan ID
-        $obat = Obat::findOrFail($id);
+        // Cari obat berdasarkan ID
+        $obat = Obat::find($id);
 
-        // Update data obat
+        // Periksa jika obat ditemukan
+        if (!$obat) {
+            return response()->json(['message' => 'Obat tidak ditemukan'], 404);
+        }
+
+        // Perbarui data obat
         $obat->update($validatedData);
 
-        // Redirect atau tampilkan pesan sukses
-        return redirect('/obat')->with('success', 'Data obat berhasil diperbarui.');
+        // Kirim respons sukses
+        return response()->json(['success' => true, 'NamaObat' => $obat->NamaObat]);
     }
+
+
 }
