@@ -1,3 +1,4 @@
+<!-- Hamburger button (for small screens) -->
 <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar"
     type="button"
     class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -12,7 +13,7 @@
 <div class="flex flex-col sm:flex-row min-h-screen">
     <!-- Sidebar -->
     <aside id="default-sidebar"
-        class="fixed sm:relative w-64 sm:w-72 bg-blue-500 text-white shadow-lg sm:translate-x-0 transform transition-transform duration-300 z-50 h-full overflow-y-auto">
+        class="fixed sm:relative w-64 sm:w-72 bg-blue-500 text-white shadow-lg sm:translate-x-0 transform transition-transform duration-300 z-50 h-full overflow-y-auto hidden sm:block">
         <div class="h-full flex flex-col px-6 py-4">
             <!-- Logo and Title -->
             <div class="flex items-center space-x-3 mb-6">
@@ -73,7 +74,7 @@
                         </li>
                     </ul>
                 </li>
-                
+
                 <!-- Reports Section -->
                 <li>
                     <button
@@ -114,7 +115,7 @@
                             <a href="#" class="block px-4 py-2 rounded-lg hover:bg-blue-700">Change Password</a>
                         </li>
                         <li>
-                            <a href="{{ url('/logout') }}"
+                            <a href="{{ url('/logout') }} "
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Logout</a>
                         </li>
                     </ul>
@@ -125,36 +126,41 @@
 </div>
 
 <script>
-document.querySelectorAll("aside button").forEach((button) => {
-    button.addEventListener("click", () => {
-        const dropdown = button.nextElementSibling;
-        if (dropdown.classList.contains("hidden")) {
-            dropdown.classList.remove("hidden");
-            dropdown.classList.add("opacity-0", "translate-y-[-10px]");
-            setTimeout(() => {
-                dropdown.classList.add("opacity-100", "translate-y-0");
-                dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
-            }, 10);
-        } else {
-            dropdown.classList.add("opacity-0", "translate-y-[-10px]");
-            dropdown.classList.remove("opacity-100", "translate-y-0");
-            setTimeout(() => {
-                dropdown.classList.add("hidden");
-                dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
-            }, 300);
-        }
-
-        // Menambahkan scroll ke dalam dropdown jika perlu
-        if (dropdown.scrollHeight > dropdown.clientHeight) {
-            dropdown.style.overflowY = 'auto'; // Memastikan overflow dapat terjadi
-        } else {
-            dropdown.style.overflowY = 'hidden'; // Menyembunyikan scrollbar jika tidak diperlukan
-        }
-    });
-});
-
-document.querySelector("[data-drawer-toggle]").addEventListener("click", () => {
+    // Get the hamburger button and sidebar
+    const hamburgerButton = document.querySelector("[data-drawer-toggle]");
     const sidebar = document.getElementById("default-sidebar");
-    sidebar.classList.toggle("-translate-x-full");
-});
+
+    // Toggle sidebar visibility when the hamburger button is clicked
+    hamburgerButton.addEventListener("click", () => {
+        sidebar.classList.toggle("hidden"); // Toggle the visibility of the sidebar
+    });
+
+    // For toggling dropdowns in the sidebar
+    document.querySelectorAll("aside button").forEach((button) => {
+        button.addEventListener("click", () => {
+            const dropdown = button.nextElementSibling;
+            if (dropdown.classList.contains("hidden")) {
+                dropdown.classList.remove("hidden");
+                dropdown.classList.add("opacity-0", "translate-y-[-10px]");
+                setTimeout(() => {
+                    dropdown.classList.add("opacity-100", "translate-y-0");
+                    dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
+                }, 10);
+            } else {
+                dropdown.classList.add("opacity-0", "translate-y-[-10px]");
+                dropdown.classList.remove("opacity-100", "translate-y-0");
+                setTimeout(() => {
+                    dropdown.classList.add("hidden");
+                    dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
+                }, 300);
+            }
+
+            // Menambahkan scroll ke dalam dropdown jika perlu
+            if (dropdown.scrollHeight > dropdown.clientHeight) {
+                dropdown.style.overflowY = 'auto'; // Memastikan overflow dapat terjadi
+            } else {
+                dropdown.style.overflowY = 'hidden'; // Menyembunyikan scrollbar jika tidak diperlukan
+            }
+        });
+    });
 </script>
