@@ -286,32 +286,34 @@
 
 
     <script>
-        // JavaScript to Toggle Dropdown Visibility
-        const dropdownButton = document.getElementById('dropdownSortButton');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-
-        dropdownButton.addEventListener('click', () => {
-            // Toggle the 'hidden' class to show/hide the dropdown menu with smooth transitions
-            dropdownMenu.classList.toggle('hidden');
-            dropdownMenu.classList.toggle('scale-95');
-        });
-
-        // Close the dropdown if the user clicks outside
-        window.addEventListener('click', (e) => {
-            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-                dropdownMenu.classList.add('scale-95');
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
+            // Dropdown Toggle
+            const dropdownButton = document.getElementById('dropdownSortButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            dropdownButton.addEventListener('click', (e) => {
+                // Prevent click from propagating to window
+                e.stopPropagation();
+                // Toggle visibility with scale transition
+                dropdownMenu.classList.toggle('hidden');
+                dropdownMenu.classList.toggle('scale-95');
+            });
+
+            // Close the dropdown if clicked outside
+            window.addEventListener('click', (e) => {
+                if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                    dropdownMenu.classList.add('scale-95');
+                }
+            });
+
             // Check if there's a session success message to show a notification
             @if (session('success'))
                 Swal.fire({
                     title: '{{ session('success') }}',
                     icon: 'success',
                     confirmButtonText: 'Ok',
-                    confirmButtonColor: '#007bff',  // Blue color for 'Ok' button
+                    confirmButtonColor: '#007bff', // Blue color for 'Ok' button
                 });
             @endif
 
@@ -321,7 +323,7 @@
                     title: 'Gagal! Kode Obat sudah ada.',
                     icon: 'error',
                     confirmButtonText: 'Ok',
-                    confirmButtonColor: '#007bff',  // Blue color for 'Ok' button
+                    confirmButtonColor: '#007bff', // Blue color for 'Ok' button
                 });
             @endif
 
@@ -336,7 +338,7 @@
                         text: "Tindakan ini tidak dapat dibatalkan!",
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: '#007bff',  // Blue color for 'Ya, Hapus!' button
+                        confirmButtonColor: '#007bff',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Ya, Hapus!',
                         cancelButtonText: 'Tidak'
@@ -370,15 +372,24 @@
                     fetch(`/obat/${obatId}/edit`)
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById('editObatId').value = data.id_obat;
-                            document.getElementById('editNamaObat').value = data.NamaObat;
-                            document.getElementById('editSatuan').value = data.Satuan;
-                            document.getElementById('editStok').value = data.stok;
-                            document.getElementById('editTglEXP').value = data.TglExp;
-                            document.getElementById('editNoBatch').value = data.NoBatch;
-                            document.getElementById('editHargaBeli').value = data.HargaBeli;
-                            const formAction = `/obat/update/${obatId}`;
-                            document.getElementById('editObatForm').action = formAction;
+                            if (data) {
+                                document.getElementById('editObatId').value = data.id_obat;
+                                document.getElementById('editNamaObat').value = data.NamaObat;
+                                document.getElementById('editSatuan').value = data.Satuan;
+                                document.getElementById('editStok').value = data.stok;
+                                document.getElementById('editTglEXP').value = data.TglExp;
+                                document.getElementById('editNoBatch').value = data.NoBatch;
+                                document.getElementById('editHargaBeli').value = data.HargaBeli;
+                                const formAction = `/obat/update/${obatId}`;
+                                document.getElementById('editObatForm').action = formAction;
+                            } else {
+                                Swal.fire({
+                                    title: 'Error fetching data.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok',
+                                    confirmButtonColor: '#007bff',
+                                });
+                            }
                         })
                         .catch(error => console.error('Error fetching drug data:', error));
                 });
@@ -406,7 +417,7 @@
                                 title: 'Obat ' + data.NamaObat + ' berhasil diperbarui!',
                                 icon: 'success',
                                 confirmButtonText: 'Ok',
-                                confirmButtonColor: '#007bff',  // Blue color for 'Ok' button
+                                confirmButtonColor: '#007bff',
                             }).then(() => {
                                 location.reload();
                             });
@@ -415,7 +426,7 @@
                                 title: data.error,
                                 icon: 'error',
                                 confirmButtonText: 'Ok',
-                                confirmButtonColor: '#007bff',  // Blue color for 'Ok' button
+                                confirmButtonColor: '#007bff',
                             });
                         }
                     })
@@ -423,6 +434,7 @@
             });
         });
     </script>
+
 
 
 
