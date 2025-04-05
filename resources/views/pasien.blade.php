@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Modal Tambah Obat -->
+    <!-- Modal Tambah Pasien -->
     <div class="modal fade" id="tambahPasienModal" tabindex="-1" aria-labelledby="tambahPasienModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

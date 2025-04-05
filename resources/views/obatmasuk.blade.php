@@ -2,6 +2,25 @@
 
 @section('title', 'Daftar Obat Masuk')
 
+@section('styles')
+<style>
+    #scannerContainer {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    #preview {
+        width: 100%;
+        height: 300px; /* Fixed height for better camera display */
+        border: 1px solid #ddd;
+        background-color: #f8f9fa; /* Visual feedback when camera is loading */
+    }
+    .hidden {
+        display: none !important;
+    }
+</style>
+@endsection
+
 @section('content')
     <div class="p-4 sm:ml-64">
         <div class="content-table">
@@ -12,7 +31,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="NoDetBeli" class="block text-sm font-medium text-gray-700">No Pembelian</label>
-                            <input type="text" id="NoDetBeli" name="NoDetBeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black">
+                            <input type="text" id="NoDetBeli" name="NoDetBeli" value="{{ $newNoDetBeli ?? '' }}" readonly
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black">
                         </div>
 
                         <div>
@@ -42,17 +62,26 @@
 
                         <div>
                             <label for="id_obat" class="block text-sm font-medium text-gray-700">Kode Obat</label>
-                            <input type="text" id="id_obat" name="id_obat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black">
+                            <div class="flex space-x-2">
+                                <input type="text" id="id_obat" name="id_obat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
+                                    placeholder="Masukkan kode atau scan barcode">
+                                    <button id="startScan" type="button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Scan</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mt-6">
+                            <!-- Scanner container -->
+                            <div id="scannerContainer" class="mt-4 hidden">
+                                <div id="reader" class="w-full" style="max-width: 500px; height: 300px;"></div>
+                                <button type="button" id="closeScan" class="mt-2 bg-red-500 text-white px-4 py-2 rounded-md">Tutup Kamera</button>
+                            </div>
+                        </div>
+                        <div class="mt-6">
                         <button class="btn btn-outline-primary" type="submit">Simpan</button>
                     </div>
                 </form>
             </div>
 
-             <!-- Tabel Obat Masuk -->
-             <table class="table table-striped">
+            <!-- Bagian tabel tetap sama -->
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -74,76 +103,113 @@
                             <td>{{ $item->NoFaktur }}</td>
                             <td>{{ $item->qty }}</td>
                             <td>{{ $item->BesarPotongan }}</td>
-                            <td>{{ $item->PotCash }}</td>
+
+                     <td>{{ $item->PotCash }}</td>
                             <td>{{ $item->HargaBeli }}</td>
                             <td>{{ $item->id_obat }}</td>
-
                             <td>
-                                <!-- Tombol Edit -->
                                 <button class="action-btn edit-btn" data-bs-toggle="modal" data-bs-target="#editObatMasukModal"
                                     data-id="{{ $item->NoDetBeli }}">
                                     <i class='bx bx-edit'></i>
                                 </button>
 
-                                <!-- Tombol Delete -->
-                                <form action="{{ route('det_transaksi_pembelian.destroy', $item->NoDetBeli) }}" method="POST"
-                                    style="display:inline;">
+                                <form action="{{ url('/det_transaksi_pembelian/'.$item->NoDetBeli) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button" class="action-btn delete-btn" data-bs-toggle="modal"
-                                    data-bs-target="#confirmDeleteModal" data-id="{{ $item->id_obat }}">
+                                    data-bs-target="#confirmDeleteModal" data-id="{{ $item->NoDetBeli }}">
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </form>
-
-                                <!-- Modal Konfirmasi Hapus -->
-                                <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
-                                    aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Penghapusan
-                                                </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Apakah Anda yakin ingin menghapus obat ini?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-danger"
-                                                    data-bs-dismiss="modal">Tidak</button>
-                                                    <form action="{{ route('det_transaksi_pembelian.destroy', $item->NoDetBeli) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    <button class="btn btn-outline-success" type="submit">Ya</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <script>
-                                    // Menangkap tombol hapus dan mengupdate action form
-                                    var deleteBtns = document.querySelectorAll('.delete-btn');
-                                    deleteBtns.forEach(function(btn) {
-                                        btn.addEventListener('click', function(event) {
-                                            var obatId = event.target.closest('button').getAttribute('data-id');
-                                            var form = document.getElementById('deleteForm');
-                                            form.action = '/det_transaksi_pembelian/' + obatId;
-                                        });
-                                    });
-                                </script>
-
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-             <!-- Pagination -->
-             <div class="pagination-container">
+            <!-- Pagination -->
+            <div class="pagination-container">
                 {{ $obatmasuk->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
+        aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Penghapusan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus obat ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Tidak</button>
+                    <form id="deleteForm" action="" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-outline-success" type="submit">Ya</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@section('scripts')
+
+<!-- Library HTML5 QR Code -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startScanButton = document.getElementById('startScan');
+        const closeScanButton = document.getElementById('closeScan');
+        const scannerContainer = document.getElementById('scannerContainer');
+        const idObatInput = document.getElementById('id_obat');
+        let html5QrCode = new Html5Qrcode("reader");
+
+        startScanButton.addEventListener('click', function () {
+            console.log("Tombol Scan diklik");
+            scannerContainer.style.display = 'block';
+            closeScanButton.style.display = 'inline-block';
+            startScanner();
+        });
+
+        function startScanner() {
+            const config = { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1.0 };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    console.log("Kode terdeteksi:", decodedText);
+                    idObatInput.value = decodedText;
+                    stopScanner();
+                },
+                (errorMessage) => {
+                    console.log("Pemindaian gagal:", errorMessage);
+                }
+            ).catch(err => {
+                console.error("Gagal memulai scanner:", err);
+                alert("Gagal mengakses kamera: " + err.message);
+                scannerContainer.style.display = 'none';
+                closeScanButton.style.display = 'none';
+            });
+        }
+
+        function stopScanner() {
+            html5QrCode.stop().then(() => {
+                console.log("Scanner dihentikan");
+                scannerContainer.style.display = 'none';
+                closeScanButton.style.display = 'none';
+            }).catch(err => {
+                console.error("Error menghentikan scanner:", err);
+            });
+        }
+
+        closeScanButton.addEventListener('click', stopScanner);
+    });
+    </script>
+    @endsection

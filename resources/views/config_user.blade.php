@@ -7,8 +7,7 @@
         <div class="content-table">
             <!-- Tombol Tambah -->
             <div class="btn-tambah mb-3">
-                <!-- Tombol untuk menambah obat yang membuka modal -->
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahObatModal">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahUserModal">
                     <i class='bx bx-plus'></i> Tambah User
                 </button>
             </div>
@@ -17,7 +16,7 @@
                     <form action="{{ url('/config_user') }}" method="GET">
                         <div class="input-group">
                             <input class="form-control me-2" type="search" name="search"
-                                placeholder="Cari berdasarkan satuan atau kode User" aria-label="Search"
+                                placeholder="Cari berdasarkan username atau role" aria-label="Search"
                                 value="{{ request('search') }}">
                             <button class="btn btn-outline-primary" type="submit">Cari</button>
                         </div>
@@ -25,7 +24,24 @@
                 </div>
             </div>
 
-            <!-- Tabel Obat -->
+            <!-- Flash Messages -->
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Tabel User -->
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -33,40 +49,29 @@
                         <th>Username</th>
                         <th>Role</th>
                         <th>Password</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($supplier as $item) --}}
-                    <tr>
-                        <td>1</td>
-                        <td>Adellakusayang123</td>
-                        <td>Pimpinan</td>
-                        <td>Password123.</td>
-                        {{-- <td>
-                            <!-- Tombol Edit -->
-                            <button class="action-btn edit-btn" data-bs-toggle="modal"
-                                data-bs-target="#editObatModal" data-id="{{ $item->id_supplier }}">
-                                <i class='bx bx-edit'></i>
-                            </button>
-
-                            <!-- Tombol Delete -->
-                            <form action="{{ route('supplier.destroy', $item->id_supplier) }}" method="POST"
-                                style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="action-btn delete-btn">
+                    @foreach ($users as $user)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $user->username }}</td>
+                            <td>{{ ucfirst($user->role) }}</td>
+                            <td>******</td>
+                            <td>
+                                <button type="button" class="action-btn delete-btn" data-bs-toggle="modal"
+                                    data-bs-target="#confirmDeleteModal" data-username="{{ $user->username }}">
                                     <i class='bx bx-trash'></i>
                                 </button>
-                            </form> --}}
-                        </td>
-                    </tr>
-                    {{-- @endforeach --}}
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
 
-            <!-- Pagination -->
             <div class="pagination-container">
-                {{-- {{ $supplier->links('pagination::bootstrap-4') }} --}}
+                {{ $users->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
@@ -86,26 +91,61 @@
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Role</label>
-                            <input type="text" class="form-control" id="role" name="role" required>
+                        <div class="mb-4">
+                            <label for="role" class="form-label">Jabatan</label>
+                            <select class="form-control" id="role" name="role" required>
+                                <option value="Dokter">Dokter</option>
+                                <option value="Apoteker">Apoteker</option>
+                                <option value="Pimpinan">Pimpinan</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input class="form-control" id="password" name="password" required>
+                            <input type="password" class="form-control" id="password" name="password" required>
                         </div>
-
-
-                        <button class="btn btn-outline-primary" type="submit">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus user ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <form id="deleteForm" action="" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- JavaScript untuk Modal Delete -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Menangani klik tombol delete
+            const deleteButtons = document.querySelectorAll('.delete-btn');
 
-
-    <!-- Sertakan JS untuk modal dan interaksi lainnya -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const username = this.getAttribute('data-username');
+                    const deleteForm = document.getElementById('deleteForm');
+                    deleteForm.action = `/config_user/${username}`;
+                });
+            });
+        });
+    </script>
 @endsection

@@ -1,34 +1,25 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ObatController;
+use App\Http\Controllers\ObatKeluarController;
 use App\Http\Controllers\ObatMasukController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ConfigUsersController;
 
 
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', [HomeController::class, 'index'])->name('landingpage');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/dashboard', function () {
-    return view('dashboard'); // Mengarahkan ke halaman dashboard
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 Route::resource('obat', ObatController::class);
 Route::get('/obat', [ObatController::class, 'index'])->name('obat.index');
@@ -44,9 +35,9 @@ Route::post('/supplier/store', [SupplierController::class, 'store'])->name('supp
 Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
 Route::put('/supplier/update/{id}', [SupplierController::class, 'update'])->name('supplier.update');
 
-Route::get('/config_user', function () {
-    return view('config_user'); // Mengarahkan ke halaman User
-});
+Route::get('/config_user', [ConfigUsersController::class, 'index'])->name('config_user.index');
+Route::post('/config_user/store', [ConfigUsersController::class, 'store'])->name('config_user.store');
+Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy'])->name('config_user.destroy');
 
 Route::resource('pasien', PasienController::class);
 Route::get('pasien', [PasienController::class, 'index']);Route::delete('/pasien/{id}', [PasienController::class, 'destroy'])->name('pasien.destroy');
@@ -55,9 +46,8 @@ Route::get('/pasien/edit/{id}', [PasienController::class, 'edit'])->name('pasien
 Route::put('/pasien/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
 
 
-Route::get('/obat_keluar', function () {
-    return view('obat_keluar'); // Mengarahkan ke halaman obat keluar
-});
+Route::resource('obatkeluar', ObatKeluarController::class);
+Route::get('obatkeluar', [ObatKeluarController::class, 'index']);
 
 Route::resource('det_transaksi_pembelian', ObatMasukController::class)->parameters(['det_transaksi_pembelian' => 'NoDetBeli']);
 Route::get('obatmasuk', [ObatMasukController::class, 'index']);Route::delete('/obatmasuk/{id}', [ObatMasukController::class, 'destroy'])->name('obatmasuk.destroy');
@@ -70,9 +60,6 @@ Route::get('/obat_kadaluwarsa', function () {
     return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa
 });
 
-Route::get('/laporan_masuk', function () {
-    return view('laporan_masuk'); // Mengarahkan ke halaman laporan obat masuk
-});
 
 Route::get('/laporan_keluar', function () {
     return view('laporan_keluar'); // Mengarahkan ke halaman laporan obat keluar

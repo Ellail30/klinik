@@ -47,6 +47,12 @@ public function index(Request $request)
             case 'HargaBeli_desc':
                 $obat = $obat->orderBy('HargaBeli', 'desc'); // Urutkan berdasarkan Harga Termahal
                 break;
+            case 'HargaJual_asc':
+                    $obat = $obat->orderBy('HargaJual', 'asc'); // Urutkan berdasarkan Harga Termurah
+                    break;
+            case 'HargaJual_desc':
+                    $obat = $obat->orderBy('HargaJual', 'desc'); // Urutkan berdasarkan Harga Termahal
+                    break;
             case 'Satuan':
                 $obat = $obat->orderBy('Satuan', 'asc'); // Urutkan berdasarkan Satuan
                 break;
@@ -58,9 +64,6 @@ public function index(Request $request)
 
     return view('obat', compact('obat', 'search', 'sortBy'));
 }
-
-
-
 
 
     public function destroy($id)
@@ -91,6 +94,8 @@ public function index(Request $request)
             'TglEXP' => 'required|date',
             'NoBatch' => 'required|max:255',
             'HargaBeli' => 'required|numeric|min:0',
+            'HargaJual' => 'required|numeric|min:0',
+
         ]);
 
         // Simpan data obat ke dalam database
@@ -119,10 +124,23 @@ public function index(Request $request)
             'TglEXP' => 'required|date',
             'NoBatch' => 'required|string',
             'HargaBeli' => 'required|numeric',
+            'HargaJual' => 'required|numeric',
+
         ]);
 
         // Cari obat berdasarkan ID
         $obat = Obat::find($id);
+        $HargaJual = $request->HargaBeli * 1.51;
+
+        $obat->update([
+            'NamaObat' => $request->NamaObat,
+            'Satuan' => $request->Satuan,
+            'stok' => $request->stok,
+            'TglEXP' => $request->TglEXP,
+            'NoBatch' => $request->NoBatch,
+            'HargaBeli' => $request->HargaBeli,
+            'HargaJual' => round($HargaJual),
+        ]);
 
         // Periksa jika obat ditemukan
         if (!$obat) {

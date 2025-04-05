@@ -51,6 +51,12 @@
                                 <button type="submit" name="sort_by" value="HargaBeli_desc" class="text-blue-600 block px-4 py-2 text-sm hover:bg-blue-100 hover:text-blue-800 focus:outline-none" title="Harga Beli Tertinggi">
                                     <i class="bx bx-chevron-down mr-2"></i> Harga Beli Tertinggi
                                 </button>
+                                <button type="submit" name="sort_by" value="HargaJual_asc" class="text-blue-600 block px-4 py-2 text-sm hover:bg-blue-100 hover:text-blue-800 focus:outline-none" title="Harga Beli Terendah">
+                                    <i class="bx bx-chevron-up mr-2"></i> Harga Jual Terendah
+                                </button>
+                                <button type="submit" name="sort_by" value="HargaJual_desc" class="text-blue-600 block px-4 py-2 text-sm hover:bg-blue-100 hover:text-blue-800 focus:outline-none" title="Harga Beli Tertinggi">
+                                    <i class="bx bx-chevron-down mr-2"></i> Harga Jual Tertinggi
+                                </button>
                                 <button type="submit" name="sort_by" value="Satuan" class="text-blue-600 block px-4 py-2 text-sm hover:bg-blue-100 hover:text-blue-800 focus:outline-none" title="Urutkan Berdasarkan Satuan">
                                     <i class="bx bx-capsule mr-2"></i> Urutkan Berdasarkan Satuan
                                 </button>
@@ -74,6 +80,7 @@
                         <th class="px-4 py-2 text-left text-base font-semibold">TglExp</th>
                         <th class="px-4 py-2 text-left text-base font-semibold">NoBatch</th>
                         <th class="px-4 py-2 text-left text-base font-semibold">Harga Beli</th>
+                        <th class="px-4 py-2 text-left text-base font-semibold">Harga Jual</th>
                         <th class="px-4 py-2 text-left text-base font-semibold">Aksi</th>
                     </tr>
                 </thead>
@@ -88,6 +95,7 @@
                             <td class="px-4 py-2 text-base">{{ \Carbon\Carbon::parse($item->TglExp)->format('d/m/Y') }}</td>
                             <td class="px-4 py-2 text-base">{{ $item->NoBatch }}</td>
                             <td class="px-4 py-2 text-base">{{ $item->HargaBeli }}</td>
+                            <td class="px-4 py-2 text-base">{{ $item->HargaJual }}</td>
                             <td class="px-4 py-2 text-base">
                                 <button class="action-btn edit-btn text-blue-500 hover:text-blue-700" data-bs-toggle="modal" data-bs-target="#editObatModal" data-id="{{ $item->id_obat }}">
                                     <i class='bx bx-edit'></i>
@@ -133,14 +141,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 
     <!-- Modal Tambah Obat -->
@@ -197,9 +197,14 @@
                         </div>
                         <div class="mb-4">
                             <label for="HargaBeli" class="block text-sm font-medium text-gray-700">Harga Beli</label>
-                            <input type="number"
-                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            <input type="number" class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 id="HargaBeli" name="HargaBeli" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="HargaJual" class="block text-sm font-medium text-gray-700">Harga Jual</label>
+                            <input type="number" class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="HargaJual" name="HargaJual" readonly>
                         </div>
                         <div class="flex justify-end space-x-2">
                             <button type="button"
@@ -213,6 +218,17 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('HargaBeli').addEventListener('input', function() {
+            let hargaBeli = parseFloat(this.value);
+            if (!isNaN(hargaBeli)) {
+                let hargaJual = hargaBeli * 1.51;
+                document.getElementById('HargaJual').value = hargaJual.toFixed(2); // Format hingga desimal
+            } else {
+                document.getElementById('HargaJual').value = ''; // Kosongkan jika input tidak valid
+            }
+        });
+    </script>
 
     <!-- Modal Edit Obat -->
     <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
@@ -267,6 +283,12 @@
                                 class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 id="editHargaBeli" name="HargaBeli" required>
                         </div>
+                        <div class="mb-4">
+                            <label for="HargaJual" class="block text-sm font-medium text-gray-700">Harga Jual</label>
+                            <input type="number"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editHargaJual" name="HargaJual" required readonly>
+                        </div>
                         <div class="flex justify-end space-x-2">
                             <button type="button"
                                 class="btn btn-secondary bg-transparent border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-600 hover:text-white focus:ring-4 focus:ring-blue-500"
@@ -280,12 +302,15 @@
         </div>
     </div>
 
-
-
-
-
-
     <script>
+
+        document.getElementById("editHargaBeli").addEventListener("input", function () {
+         let HargaBeli = parseFloat(this.value);
+         if (!isNaN(HargaBeli)) {
+        let HargaJual = HargaBeli * 1.51; // Misalnya, markup 20%
+        document.getElementById("editHargaJual").value = Math.round(HargaJual);
+        }});
+
         document.addEventListener('DOMContentLoaded', () => {
             // Dropdown Toggle
             const dropdownButton = document.getElementById('dropdownSortButton');
