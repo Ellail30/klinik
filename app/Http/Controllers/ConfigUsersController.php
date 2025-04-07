@@ -33,7 +33,7 @@ class ConfigUsersController extends Controller
             'id' => Str::uuid(),
             'username' => $request->username,
             'role' => $request->role,
-            'password' => Hash::make($request->password), // Tanpa "value:"
+            'password' => bcrypt($request->password), // Tanpa "value:"
         ]);
         return redirect()->route('config_user.index')->with('success', 'User berhasil ditambahkan');
     }
@@ -41,9 +41,9 @@ class ConfigUsersController extends Controller
     public function destroy($username)
     {
         // Cari user berdasarkan username, bukan ID
-        $user = User::where('username', $username)->firstOrFail();
+        $users = User::where('username', $username)->firstOrFail();
 
-        $user->delete();
+        $users->delete();
 
         return redirect()->route('config_user.index')->with('success', 'User berhasil dihapus');
     }

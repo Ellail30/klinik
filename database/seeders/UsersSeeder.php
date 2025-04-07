@@ -3,37 +3,18 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UsersSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        $userdata = [
-            [
-                'username'=>'Ellail',
-                'role'=>'apoteker',
-                'password'=>bcrypt('301201')
-            ],
-            [
-                'username'=>'Airin',
-                'role'=>'dokter',
-                'password'=>bcrypt('12345')
-            ],
-            [
-                'username'=>'Rosefani',
-                'role'=>'pimpinan',
-                'password'=>bcrypt('891011')
-            ],
-            ];
-            foreach($userdata as $key => $val){
-                User::create($val);
-            }
+        User::create([
+            'id' => Str::uuid(),
+            'username' => 'ellail',
+            'role' => 'apoteker',
+            'password' => bcrypt('301201'),
+        ]);
     }
 }

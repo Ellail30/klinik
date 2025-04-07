@@ -21,10 +21,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        $users = User::where('username', $request->username)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            session(['user' => $user]);
+        if ($users && Hash::check($request->password, $users->password)) {
+            session(['user' => $users]);
             return redirect()->route('dashboard');
         }
 
