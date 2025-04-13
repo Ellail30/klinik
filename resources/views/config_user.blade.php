@@ -46,6 +46,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>ID User</th>
                         <th>Username</th>
                         <th>Role</th>
                         <th>Password</th>
@@ -56,6 +57,7 @@
                     @foreach ($users as $user)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+                            <td>{{ $user->role_id }}</td>
                             <td>{{ $user->username }}</td>
                             <td>{{ ucfirst($user->role) }}</td>
                             <td>******</td>

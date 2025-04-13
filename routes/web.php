@@ -18,8 +18,31 @@ Route::get('/', [HomeController::class, 'index'])->name('landingpage');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+Route::get('/config_user', [ConfigUsersController::class, 'index'])->name('config_user.index');
+Route::post('/config_user/store', [ConfigUsersController::class, 'store'])->name('config_user.store');
+Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy'])->name('config_user.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/dokter/dashboard', function () {
+        return view('dokter.dashboard');
+    })->name('dokter.dashboard');
+
+    Route::get('/apoteker/dashboard', function () {
+        return view('apoteker.dashboard');
+    })->name('apoteker.dashboard');
+
+    Route::get('/pimpinan/dashboard', function () {
+        return view('pimpinan.dashboard');
+    })->name('pimpinan.dashboard');
+});
 
 Route::resource('obat', ObatController::class);
 Route::get('/obat', [ObatController::class, 'index'])->name('obat.index');
