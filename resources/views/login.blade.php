@@ -21,7 +21,7 @@
                 <div class="text-red-500 text-center mb-4">{{ $errors->first('login_error') }}</div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST">
+            <form action="{{ route('processLogin') }}" method="POST">
                 @csrf
 
                 <!-- Username Input with Floating Label -->

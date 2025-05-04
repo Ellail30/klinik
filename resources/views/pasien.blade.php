@@ -106,6 +106,51 @@
 
                             </td>
                         </tr>
+
+                          <!-- Modal Edit Pasien -->
+    <div class="modal fade" id="editPasienModal" tabindex="-1" aria-labelledby="editPasienModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPasienModalLabel">Edit Data Pasien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('pasien.update', $item->Nik) }}" method="POST">
+                        @csrf
+                        @method('PUT') <!-- Menentukan request menggunakan method PUT -->
+
+                        <div class="mb-3">
+                            <label for="Nik" class="form-label">NIK</label>
+                            <input type="number" class="form-control" id="Nik" name="Nik" required disabled
+                                value="{{ old('Nik', $item->Nik ?? '') }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Nrm" class="form-label">NRM</label>
+                            <input type="text" class="form-control" id="Nrm" name="Nrm"
+                                value="{{ $item->Nrm }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="NamaPasien" class="form-label">Nama Pasien</label>
+                            <input type="text" class="form-control" id="NamaPasien" name="NamaPasien"
+                                value="{{ $item->NamaPasien }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Umur" class="form-label">Umur</label>
+                            <input type="number" class="form-control" id="Umur" name="Umur"
+                                value="{{ $item->Umur }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Alamat" class="form-label">Alamat</label>
+                            <input type="text" class="form-control" id="Alamat" name="Alamat"
+                                value="{{ $item->Alamat }}" required>
+                        </div>
+                        <button class="btn btn-outline-primary" type="submit">Simpan perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
                     @endforeach
                 </tbody>
             </table>
@@ -154,50 +199,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Edit Pasien -->
-    <div class="modal fade" id="editPasienModal" tabindex="-1" aria-labelledby="editPasienModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editPasienModalLabel">Edit Data Pasien</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('pasien.update', $item->Nik) }}" method="POST">
-                        @csrf
-                        @method('PUT') <!-- Menentukan request menggunakan method PUT -->
 
-                        <div class="mb-3">
-                            <label for="Nik" class="form-label">NIK</label>
-                            <input type="number" class="form-control" id="Nik" name="Nik" required disabled
-                                value="{{ old('Nik', $item->Nik ?? '') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label for="Nrm" class="form-label">NRM</label>
-                            <input type="text" class="form-control" id="Nrm" name="Nrm"
-                                value="{{ $item->Nrm }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="NamaPasien" class="form-label">Nama Pasien</label>
-                            <input type="text" class="form-control" id="NamaPasien" name="NamaPasien"
-                                value="{{ $item->NamaPasien }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="Umur" class="form-label">Umur</label>
-                            <input type="number" class="form-control" id="Umur" name="Umur"
-                                value="{{ $item->Umur }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="Alamat" class="form-label">Alamat</label>
-                            <input type="text" class="form-control" id="Alamat" name="Alamat"
-                                value="{{ $item->Alamat }}" required>
-                        </div>
-                        <button class="btn btn-outline-primary" type="submit">Simpan perubahan</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <!-- Sertakan JS untuk modal dan interaksi lainnya -->

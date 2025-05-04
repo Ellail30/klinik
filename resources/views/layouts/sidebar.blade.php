@@ -65,8 +65,10 @@
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Pasien</a>
                         </li>
                         <li>
-                            <a href="{{ url('/obatmasuk') }}"
+                            <a href="{{ route('obat-masuk.index') }}"
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Obat Masuk</a>
+                            {{-- <a href="{{ url('/obatmasuk') }}"
+                                class="block px-4 py-2 rounded-lg hover:bg-blue-700">Obat Masuk</a> --}}
                         </li>
                         <li>
                             <a href="{{ url('/obatkeluar') }}"

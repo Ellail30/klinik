@@ -7,63 +7,63 @@ use Illuminate\Http\Request;
 
 class ObatController extends Controller
 {
-public function index(Request $request)
-{
-    $search = $request->input('search'); // Ambil input 'search'
-    $sortBy = $request->input('sort_by'); // Ambil input 'sort_by'
+    public function index(Request $request)
+    {
+        $search = $request->input('search'); // Ambil input 'search'
+        $sortBy = $request->input('sort_by'); // Ambil input 'sort_by'
 
-    $obat = Obat::query();
+        $obat = Obat::query();
 
-    // If search term is provided
-    if ($search) {
-        $searchTerms = explode(' ', $search); // Split the search input by space to handle multiple words
+        // If search term is provided
+        if ($search) {
+            $searchTerms = explode(' ', $search); // Split the search input by space to handle multiple words
 
-        foreach ($searchTerms as $term) {
-            // Apply the search condition for each term (word)
-            $obat = $obat->where(function ($query) use ($term) {
-                $query->where('NamaObat', 'like', '%' . $term . '%')
-                      ->orWhere('id_obat', 'like', '%' . $term . '%')
-                      ->orWhere('NoBatch', 'like', '%' . $term . '%');
-            });
+            foreach ($searchTerms as $term) {
+                // Apply the search condition for each term (word)
+                $obat = $obat->where(function ($query) use ($term) {
+                    $query->where('NamaObat', 'like', '%' . $term . '%')
+                        ->orWhere('id_obat', 'like', '%' . $term . '%')
+                        ->orWhere('NoBatch', 'like', '%' . $term . '%');
+                });
+            }
         }
-    }
 
-    // Sorting berdasarkan kolom yang dipilih
-    if ($sortBy) {
-        switch ($sortBy) {
-            case 'NamaObat_asc':
-                $obat = $obat->orderBy('NamaObat', 'asc'); // Urutkan Nama Obat A-Z
-                break;
-            case 'NamaObat_desc':
-                $obat = $obat->orderBy('NamaObat', 'desc'); // Urutkan Nama Obat Z-A
-                break;
-            case 'TglExp_asc':
-                // Urutkan berdasarkan tanggal kedaluwarsa terdekat ke sekarang
-                $obat = $obat->orderByRaw('ABS(DATEDIFF(TglExp, CURDATE())) asc');
-                break;
-            case 'HargaBeli_asc':
-                $obat = $obat->orderBy('HargaBeli', 'asc'); // Urutkan berdasarkan Harga Termurah
-                break;
-            case 'HargaBeli_desc':
-                $obat = $obat->orderBy('HargaBeli', 'desc'); // Urutkan berdasarkan Harga Termahal
-                break;
-            case 'HargaJual_asc':
+        // Sorting berdasarkan kolom yang dipilih
+        if ($sortBy) {
+            switch ($sortBy) {
+                case 'NamaObat_asc':
+                    $obat = $obat->orderBy('NamaObat', 'asc'); // Urutkan Nama Obat A-Z
+                    break;
+                case 'NamaObat_desc':
+                    $obat = $obat->orderBy('NamaObat', 'desc'); // Urutkan Nama Obat Z-A
+                    break;
+                case 'TglExp_asc':
+                    // Urutkan berdasarkan tanggal kedaluwarsa terdekat ke sekarang
+                    $obat = $obat->orderByRaw('ABS(DATEDIFF(TglExp, CURDATE())) asc');
+                    break;
+                case 'HargaBeli_asc':
+                    $obat = $obat->orderBy('HargaBeli', 'asc'); // Urutkan berdasarkan Harga Termurah
+                    break;
+                case 'HargaBeli_desc':
+                    $obat = $obat->orderBy('HargaBeli', 'desc'); // Urutkan berdasarkan Harga Termahal
+                    break;
+                case 'HargaJual_asc':
                     $obat = $obat->orderBy('HargaJual', 'asc'); // Urutkan berdasarkan Harga Termurah
                     break;
-            case 'HargaJual_desc':
+                case 'HargaJual_desc':
                     $obat = $obat->orderBy('HargaJual', 'desc'); // Urutkan berdasarkan Harga Termahal
                     break;
-            case 'Satuan':
-                $obat = $obat->orderBy('Satuan', 'asc'); // Urutkan berdasarkan Satuan
-                break;
+                case 'Satuan':
+                    $obat = $obat->orderBy('Satuan', 'asc'); // Urutkan berdasarkan Satuan
+                    break;
+            }
         }
+
+        // Paginate hasil query
+        $obat = $obat->paginate(5);
+
+        return view('obat', compact('obat', 'search', 'sortBy'));
     }
-
-    // Paginate hasil query
-    $obat = $obat->paginate(5);
-
-    return view('obat', compact('obat', 'search', 'sortBy'));
-}
 
 
     public function destroy($id)
@@ -78,7 +78,6 @@ public function index(Request $request)
             // Kembalikan ke halaman daftar obat dengan pesan sukses
             return redirect()->route('obat.index')->with('success', "$obatName berhasil dihapus!");
         }
-
     }
 
 
@@ -154,5 +153,31 @@ public function index(Request $request)
         return response()->json(['success' => true, 'NamaObat' => $obat->NamaObat]);
     }
 
+    public function getMedicineDetailsByBarcode(Request $request)
+    {
+        $barcode = $request->input('barcode');
 
+        // Find medicine by barcode
+        $medicine = Obat::where('id_obat', $barcode)->first();
+
+        if ($medicine) {
+            return response()->json([
+                'success' => true,
+                'medicine' => [
+                    'nama_obat' => $medicine->NamaObat,
+                    'satuan' => $medicine->Satuan,
+                    'stok' => $medicine->stok,
+                    'tgl_exp' => $medicine->TglEXP,
+                    'no_batch' => $medicine->NoBatch,
+                    'harga_beli' => $medicine->HargaBeli,
+                    'harga_jual' => $medicine->HargaJual
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Obat tidak ditemukan'
+        ], 404);
+    }
 }

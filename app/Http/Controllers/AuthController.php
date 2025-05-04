@@ -24,12 +24,49 @@ class AuthController extends Controller
         $users = User::where('username', $request->username)->first();
 
         if ($users && Hash::check($request->password, $users->password)) {
-            session(['user' => $users]);
+            session(['users' => $users]);
             return redirect()->route('dashboard');
         }
 
         return back()->withErrors(['login_error' => 'Username atau password salah']);
     }
+
+    // public function login(Request $request)
+    // {
+    //     $credentials = $request->validate([
+    //         'username' => 'required|string',
+    //         'password' => 'required|string',
+    //     ]);
+
+    //     // dd($credentials);
+
+    //     if (Auth::attempt($credentials)) {
+    //         $request->session()->regenerate();
+
+    //         $user = Auth::user();
+
+    //         // Redirect berdasarkan role
+    //         switch ($user->role) {
+    //             case 'dokter':
+    //                 return redirect()->route('dashboard');
+    //             case 'apoteker':
+    //                 return redirect()->route('dashboard');
+    //             case 'pimpinan':
+    //                 return redirect()->route('dashboard');
+    //             default:
+    //                 Auth::logout();
+    //                 return redirect('/login')->withErrors([
+    //                     'username' => 'Role tidak dikenali.',
+    //                 ]);
+    //         }
+    //     }
+
+    //     return back()
+    //         ->withErrors([
+    //             'username' => 'Username atau password salah.',
+    //         ])
+    //         ->onlyInput('username');
+    // }
 
     public function dashboard()
     {

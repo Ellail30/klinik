@@ -12,6 +12,7 @@ class DashboardController extends Controller
     if (!session('user')) {
         return redirect()->route('login');
     }
+    // dd('halo');
 
     // Hitung total transaksi pembelian
     $totalTransaksi = DB::table('det_transaksi_pembelian')->count();

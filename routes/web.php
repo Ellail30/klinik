@@ -17,7 +17,7 @@ use App\Http\Controllers\ConfigUsersController;
 Route::get('/', [HomeController::class, 'index'])->name('landingpage');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('processLogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
@@ -27,21 +27,23 @@ Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('dashboard');
+    // })->name('dashboard');
 
-    Route::get('/dokter/dashboard', function () {
-        return view('dokter.dashboard');
-    })->name('dokter.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/apoteker/dashboard', function () {
-        return view('apoteker.dashboard');
-    })->name('apoteker.dashboard');
+    // Route::get('/dokter/dashboard', function () {
+    //     return view('dokter.dashboard');
+    // })->name('dokter.dashboard');
 
-    Route::get('/pimpinan/dashboard', function () {
-        return view('pimpinan.dashboard');
-    })->name('pimpinan.dashboard');
+    // Route::get('/apoteker/dashboard', function () {
+    //     return view('apoteker.dashboard');
+    // })->name('apoteker.dashboard');
+
+    // Route::get('/pimpinan/dashboard', function () {
+    //     return view('pimpinan.dashboard');
+    // })->name('pimpinan.dashboard');
 });
 
 Route::resource('obat', ObatController::class);
@@ -50,6 +52,8 @@ Route::delete('/obat/{id}', [ObatController::class, 'destroy'])->name('obat.dest
 Route::post('/obat/store', [ObatController::class, 'store'])->name('obat.store');;
 Route::get('/obat/edit/{id}', [ObatController::class, 'edit'])->name('obat.edit');
 Route::put('/obat/update/{id}', [ObatController::class, 'update'])->name('obat.update');
+
+Route::get('/obat/details-by-barcode', [ObatController::class, 'getMedicineDetailsByBarcode']);
 
 Route::resource('supplier', SupplierController::class);
 Route::get('supplier', [SupplierController::class, 'index']);
@@ -72,12 +76,41 @@ Route::put('/pasien/update/{id}', [PasienController::class, 'update'])->name('pa
 Route::resource('obatkeluar', ObatKeluarController::class);
 Route::get('obatkeluar', [ObatKeluarController::class, 'index']);
 
-Route::resource('det_transaksi_pembelian', ObatMasukController::class)->parameters(['det_transaksi_pembelian' => 'NoDetBeli']);
-Route::get('obatmasuk', [ObatMasukController::class, 'index']);Route::delete('/obatmasuk/{id}', [ObatMasukController::class, 'destroy'])->name('obatmasuk.destroy');
-Route::post('/obatmasuk', [ObatMasukController::class, 'store'])->name('obatmasuk.store');
-Route::get('/obatmasuk/edit/{id}', [ObatMasukController::class, 'edit'])->name('obatmasuk.edit');
-Route::put('/obatmasuk/update/{id}', [ObatMasukController::class, 'update'])->name('obatmasuk.update');
+// Route::resource('det_transaksi_pembelian', ObatMasukController::class)->parameters(['det_transaksi_pembelian' => 'NoDetBeli']);
+// Route::get('obatmasuk', [ObatMasukController::class, 'index']);
+// Route::delete('/obatmasuk/{id}', [ObatMasukController::class, 'destroy'])->name('obatmasuk.destroy');
+// Route::post('/obatmasuk', [ObatMasukController::class, 'store'])->name('obatmasuk.store');
+// Route::get('/obatmasuk/edit/{id}', [ObatMasukController::class, 'edit'])->name('obatmasuk.edit');
+// Route::put('/obatmasuk/update/{id}', [ObatMasukController::class, 'update'])->name('obatmasuk.update');
 
+
+Route::prefix('obat-masuk')->group(function () {
+    Route::get('/', [ObatMasukController::class, 'index'])
+        ->name('obat-masuk.index');
+
+    Route::get('/create', [ObatMasukController::class, 'create'])
+        ->name('obat-masuk.create');
+
+    Route::post('/store', [ObatMasukController::class, 'store'])
+        ->name('obat-masuk.store');
+
+    Route::get('/{NoFaktur}', [ObatMasukController::class, 'show'])->where('NoFaktur', '.*')
+        ->name('obat-masuk.show');
+
+    Route::get('/{NoFaktur}/edit', [ObatMasukController::class, 'edit'])
+        ->name('obat-masuk.edit');
+
+    Route::put('/{NoFaktur}', [ObatMasukController::class, 'update'])
+        ->name('obat-masuk.update');
+
+    Route::delete('/{NoFaktur}', [ObatMasukController::class, 'destroy'])
+        ->name('obat-masuk.destroy');
+
+    Route::get('/search-barcode', [ObatMasukController::class, 'searchByBarcode']);
+    Route::get('/get-obat-details', [ObatMasukController::class, 'getObatDetails']);
+
+});
+Route::get('/cari-barcode', [ObatMasukController::class, 'cariBarcode']);
 
 Route::get('/obat_kadaluwarsa', function () {
     return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa
