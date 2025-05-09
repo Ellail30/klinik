@@ -67,7 +67,7 @@
                 {{-- DATA MASTER --}}
                 @if (in_array($role, ['dokter', 'apoteker']))
                     @php
-                        $isActive = request()->is('obat') || request()->is('supplier') || request()->is('pasien');
+                        $isActive = request()->is('obat*') || request()->is('supplier*') || request()->is('pasien*');
                     @endphp
                     <li>
                         <button
@@ -83,19 +83,19 @@
                             @if ($role != 'admin')
                                 <li>
                                     <a href="{{ url('/obat') }}"
-                                        class="block px-4 py-2 rounded-lg {{ request()->is('obat') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat</a>
+                                        class="block px-4 py-2 rounded-lg {{ request()->is('obat*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat</a>
                                 </li>
                             @endif
                             @if ($role == 'apoteker')
                                 <li>
                                     <a href="{{ url('/supplier') }}"
-                                        class="block px-4 py-2 rounded-lg {{ request()->is('supplier') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Supplier</a>
+                                        class="block px-4 py-2 rounded-lg {{ request()->is('supplier*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Supplier</a>
                                 </li>
                             @endif
                             @if (in_array($role, ['dokter', 'admin']))
                                 <li>
                                     <a href="{{ url('/pasien') }}"
-                                        class="block px-4 py-2 rounded-lg {{ request()->is('pasien') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Pasien</a>
+                                        class="block px-4 py-2 rounded-lg {{ request()->is('pasien*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Pasien</a>
                                 </li>
                             @endif
                         </ul>
@@ -105,7 +105,7 @@
                 {{-- TRANSAKSI (APOTEKER) --}}
                 @if ($role == 'apoteker')
                     @php
-                        $isActive = request()->is('obatmasuk*') || request()->is('obatkeluar*');
+                        $isActive = request()->is('obatmasuk*') || request()->is('apoteker*');
                     @endphp
                     <li>
                         <button
@@ -124,8 +124,8 @@
                                     Masuk</a>
                             </li>
                             <li>
-                                <a href="{{ url('/obatkeluar') }}"
-                                    class="block px-4 py-2 rounded-lg {{ request()->is('obatkeluar*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
+                                <a href="{{ route('apoteker.index') }}"
+                                    class="block px-4 py-2 rounded-lg {{ request()->is('apoteker*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
                                     Keluar</a>
                             </li>
                         </ul>
@@ -135,10 +135,10 @@
                 {{-- RESEP (DOKTER) --}}
                 @if ($role == 'dokter')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full px-4 py-3 rounded-lg transition {{ request()->is('resep') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                        <a href="{{ route('dokter.index')}}"
+                            class="flex items-center w-full px-4 py-3 rounded-lg transition {{ request()->is('dokter*') || request()->is('resep*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                             <i class='bx bxs-book-content text-2xl mr-3'></i>
-                            Resep
+                            Antrian
                         </a>
                     </li>
                 @endif

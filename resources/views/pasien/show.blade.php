@@ -50,14 +50,16 @@
                 </div>
 
                 <div class="mt-6 flex space-x-2">
-                    <a href="{{ route('pasien.edit', $pasien->Nrm) }}"
-                        class="w-full text-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-                        Edit Profil
-                    </a>
-                    <a href="{{ route('pendaftaran.daftar-ulang', $pasien->Nrm) }}"
-                        class="w-full text-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
-                        Daftar Ulang
-                    </a>
+                    @if (Auth::user()->role == 'admin')
+                        <a href="{{ route('pasien.edit', $pasien->Nrm) }}"
+                            class="w-full text-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                            Edit Profil
+                        </a>
+                        <a href="{{ route('pendaftaran.daftar-ulang', $pasien->Nrm) }}"
+                            class="w-full text-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
+                            Daftar Ulang
+                        </a>
+                    @endif
                 </div>
             </div>
 

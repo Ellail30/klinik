@@ -4,14 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ObatController;
+use App\Http\Controllers\DokterController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\ObatMasukController;
 use App\Http\Controllers\ObatKeluarController;
 use App\Http\Controllers\ConfigUsersController;
 use App\Http\Controllers\PendaftaranController;
-use App\Http\Controllers\KunjunganController;
 
 
 
@@ -55,8 +57,34 @@ Route::prefix('pendaftaran')->group(function () {
     Route::post('/daftar-ulang/{pasien}', [PendaftaranController::class, 'simpanDaftarUlang'])->name('pendaftaran.simpan-daftar-ulang');
 });
 
-Route::get('/kunjungan/{idKunjungan}', [KunjunganController::class, 'show'])->name('kunjungan.show');
-Route::get('/kunjungan/statistik', [KunjunganController::class, 'statistikKunjungan'])->name('statisitk-kunjungan');
+// Route dokter
+Route::prefix('dokter')->group(function () {
+    Route::get('/', [DokterController::class, 'index'])->name('dokter.index');
+    Route::get('/panggilPasien/{id}', [DokterController::class, 'panggilPasien'])->name('dokter.panggilPasien');
+    Route::get('/pemeriksaan/{id}', [DokterController::class, 'formPemeriksaan'])->name('dokter.formPemeriksaan');
+    Route::post('/pemeriksaan/{id}', [DokterController::class, 'simpanPemeriksaan'])->name('dokter.simpanPemeriksaan');
+});
+
+Route::prefix('resep')->group(function () {
+    Route::get('/{id}', [DokterController::class, 'formResep'])->name('dokter.resep');
+    Route::post('/{id}', [DokterController::class, 'simpanResep'])->name('dokter.simpanResep');
+    Route::get('/cetak/{id}', [DokterController::class, 'cetakResep'])->name('dokter.cetakResep');
+});
+
+Route::prefix('kunjungan')->group(function () {
+    Route::get('/{idKunjungan}', [KunjunganController::class, 'show'])->name('kunjungan.show');
+    Route::get('/statistik', [KunjunganController::class, 'statistikKunjungan'])->name('statisitk-kunjungan');
+});
+
+Route::prefix('apoteker')->name('apoteker.')->group(function () {
+    Route::get('/', [ApotekerController::class, 'index'])->name('index');
+    Route::get('/resep/{id}', [ApotekerController::class, 'detailResep'])->name('detailResep');
+    Route::post('/resep/{id}/pembayaran', [ApotekerController::class, 'simpanPembayaran'])->name('simpanPembayaran');
+    Route::get('/pembayaran/{id}/cetak', [ApotekerController::class, 'cetakBukti'])->name('cetakBukti');
+    Route::get('/riwayat-pembayaran', [ApotekerController::class, 'riwayatPembayaran'])->name('riwayatPembayaran');
+});
+
+
 
 Route::resource('obatkeluar', ObatKeluarController::class);
 Route::get('obatkeluar', [ObatKeluarController::class, 'index']);
@@ -93,7 +121,6 @@ Route::prefix('obat-masuk')->group(function () {
 
     Route::get('/search-barcode', [ObatMasukController::class, 'searchByBarcode']);
     Route::get('/get-obat-details', [ObatMasukController::class, 'getObatDetails']);
-
 });
 Route::get('/cari-barcode', [ObatMasukController::class, 'cariBarcode']);
 
@@ -111,5 +138,3 @@ Route::get('/laporan_persediaan', function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-

@@ -40,7 +40,7 @@
         </section>
 
         {{-- Statistics --}}
-        @if (Auth::user()->role == 'Apoteker')
+        @if (Auth::user()->role == 'apoteker')
             <section>
                 <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                     <div class="sm:hidden">

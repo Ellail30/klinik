@@ -42,14 +42,16 @@
                                     <td class="py-3 px-4 text-left">{{ $pasien->Umur }} Tahun</td>
                                     <td class="py-3 px-4 text-center">
                                         <div class="flex justify-center space-x-2">
-                                            <a href="{{ route('pendaftaran.daftar-ulang', $pasien->Nrm) }}"
-                                                class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-300 text-sm">
-                                                Daftar Ulang
-                                            </a>
-                                            <a href="{{ route('pasien.show', $pasien->Nrm)}}" 
+                                            @if (Auth::user()->role == 'admin')
+                                                <a href="{{ route('pendaftaran.daftar-ulang', $pasien->Nrm) }}"
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-300 text-sm">
+                                                    Daftar Ulang
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('pasien.show', $pasien->Nrm) }}"
                                                 class="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition duration-300 text-sm">
                                                 Detail
-                                        </a>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -76,9 +78,9 @@
 
                 <div id="detailModalContent" class="grid md:grid-cols-2 gap-4">
                     {{-- Konten detail pasien akan diisi secara dinamis --}}
-                </div>
-            </div>
-        </div> --}}
+    </div>
+    </div>
+    </div> --}}
     </div>
 
     {{-- @push('scripts')

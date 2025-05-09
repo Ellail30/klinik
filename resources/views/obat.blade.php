@@ -371,7 +371,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-6">
-                    <form id="editObatForm" action="{{ route('obat.update', ['id' => ':id']) }}" method="POST">
+                    <form id="editObatForm" action="#" method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="editObatId" name="id_obat">

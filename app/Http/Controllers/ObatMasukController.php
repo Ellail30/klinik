@@ -140,7 +140,7 @@ class ObatMasukController extends Controller
                     'transaksi_pembelian.Waktu',
                     'transaksi_pembelian.TglJatuhTempo',
                     'sales.NamaSales',
-                    'users.NamaApoteker',
+                    'users.Nama',
                     DB::raw('COUNT(det_transaksi_pembelian.NoDetBeli) as total_item'),
                     DB::raw('SUM(det_transaksi_pembelian.qty * det_transaksi_pembelian.HargaBeli) as total_harga')
                 )
@@ -150,7 +150,7 @@ class ObatMasukController extends Controller
                     'transaksi_pembelian.Waktu',
                     'transaksi_pembelian.TglJatuhTempo',
                     'sales.NamaSales',
-                    'users.NamaApoteker'
+                'users.Nama'
                 );
         }, 'transaksi_pembelian_with_totals');
 
@@ -160,7 +160,7 @@ class ObatMasukController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('NoFaktur', 'LIKE', "%{$search}%")
                     ->orWhere('NamaSales', 'LIKE', "%{$search}%")
-                    ->orWhere('NamaApoteker', 'LIKE', "%{$search}%");
+                    ->orWhere('Nama', 'LIKE', "%{$search}%");
             });
         }
 
@@ -202,7 +202,7 @@ class ObatMasukController extends Controller
             ->select(
                 'transaksi_pembelian.*',
                 'sales.NamaSales',
-                'users.NamaApoteker'
+                'users.Nama'
             )
             ->first();
 
