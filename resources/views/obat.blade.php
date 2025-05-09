@@ -111,6 +111,10 @@
                             <tr class="border-t">
                                 <td class="px-4 py-2 text-base">{{ $obat->firstItem() + $loop->index }}</td>
                                 <td class="px-4 py-2 text-base">{{ $item->id_obat }}</td>
+                                <td class="px-4 py-2 text-base">
+                                    {!! (new \Picqer\Barcode\BarcodeGeneratorHTML())->getBarcode($item->id_obat, 'C128', 1, 33) !!}
+                                    <span class="block text-center text-xs">{{ $item->id_obat }}</span>
+                                </td>
                                 <td class="px-4 py-2 text-base">{{ $item->NamaObat }}</td>
                                 <td class="px-4 py-2 text-base">{{ $item->Satuan }}</td>
                                 <td class="px-4 py-2 text-base">{{ $item->stok }}</td>
@@ -120,11 +124,101 @@
                                 <td class="px-4 py-2 text-base">{{ $item->HargaBeli }}</td>
                                 <td class="px-4 py-2 text-base">{{ $item->HargaJual }}</td>
                                 <td class="px-4 py-2 text-base">
+                                    <!-- Tombol Edit -->
                                     <button class="action-btn edit-btn text-blue-500 hover:text-blue-700"
                                         data-bs-toggle="modal" data-bs-target="#editObatModal"
                                         data-id="{{ $item->id_obat }}">
                                         <i class='bx bx-edit'></i>
                                     </button>
+
+                                    <!-- Modal Edit -->
+                                    <div class="modal fade" id="editObatModal" tabindex="-1"
+                                        aria-labelledby="editObatModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-white shadow-lg rounded-lg max-w-lg mx-auto">
+                                                <div class="modal-header border-b border-gray-200">
+                                                    <h5 class="modal-title text-xl font-semibold text-blue-600"
+                                                        id="editObatModalLabel">Edit Obat</h5>
+                                                    <button type="button"
+                                                        class="btn-close text-blue-600 hover:text-blue-800"
+                                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body p-6">
+                                                    <form id="editObatForm" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" id="editObatId" name="id_obat">
+
+                                                        <div class="mb-4">
+                                                            <label for="NamaObat"
+                                                                class="block text-sm font-medium text-gray-700">Nama
+                                                                Obat</label>
+                                                            <input type="text" id="editNamaObat" name="NamaObat"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="Satuan"
+                                                                class="block text-sm font-medium text-gray-700">Satuan</label>
+                                                            <select id="editSatuan" name="Satuan"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                                <option value="BOTOL">BOTOL</option>
+                                                                <option value="TUBE">TUBE</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="stok"
+                                                                class="block text-sm font-medium text-gray-700">Stok</label>
+                                                            <input type="number" id="editStok" name="stok"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="TglEXP"
+                                                                class="block text-sm font-medium text-gray-700">Tanggal
+                                                                Expired</label>
+                                                            <input type="date" id="editTglEXP" name="TglEXP"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="NoBatch"
+                                                                class="block text-sm font-medium text-gray-700">NoBatch</label>
+                                                            <input type="text" id="editNoBatch" name="NoBatch"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="HargaBeli"
+                                                                class="block text-sm font-medium text-gray-700">Harga
+                                                                Beli</label>
+                                                            <input type="number" id="editHargaBeli" name="HargaBeli"
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="HargaJual"
+                                                                class="block text-sm font-medium text-gray-700">Harga
+                                                                Jual</label>
+                                                            <input type="number" id="editHargaJual" name="HargaJual"
+                                                                readonly
+                                                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                required>
+                                                        </div>
+                                                        <div class="flex justify-end space-x-2">
+                                                            <button type="button"
+                                                                class="btn btn-secondary bg-transparent border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-600 hover:text-white"
+                                                                data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700">Simpan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <button class="action-btn delete-btn text-red-500 hover:text-red-700"
                                         data-bs-toggle="modal" data-id="{{ $item->id_obat }}"
                                         data-name="{{ $item->NamaObat }}">
@@ -362,7 +456,7 @@
     </script>
 
     <!-- Modal Edit Obat -->
-    <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-white shadow-lg rounded-lg max-w-lg mx-auto">
                 <div class="modal-header border-b border-gray-200">
@@ -371,7 +465,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-6">
-                    <form id="editObatForm" action="#" method="POST">
+                    <form id="editObatForm" method="POST" action="">
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="editObatId" name="id_obat">
@@ -431,9 +525,17 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <script>
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const form = document.getElementById('editObatForm');
+                form.action = `/obat/${id}`;
+                // Anda juga bisa load data via AJAX di sini jika perlu isi form otomatis
+            });
+        });
         document.getElementById("editHargaBeli").addEventListener("input", function() {
             let HargaBeli = parseFloat(this.value);
             if (!isNaN(HargaBeli)) {
@@ -523,31 +625,45 @@
             // Handle Edit Button
             const editBtns = document.querySelectorAll('.edit-btn');
             editBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', () => {
                     const obatId = btn.getAttribute('data-id');
+
                     fetch(`/obat/${obatId}/edit`)
                         .then(response => response.json())
                         .then(data => {
                             if (data) {
+                                // Isi form dengan data dari backend
                                 document.getElementById('editObatId').value = data.id_obat;
                                 document.getElementById('editNamaObat').value = data.NamaObat;
                                 document.getElementById('editSatuan').value = data.Satuan;
                                 document.getElementById('editStok').value = data.stok;
-                                document.getElementById('editTglEXP').value = data.TglExp;
+                                document.getElementById('editTglEXP').value = data.TglEXP;
                                 document.getElementById('editNoBatch').value = data.NoBatch;
                                 document.getElementById('editHargaBeli').value = data.HargaBeli;
-                                const formAction = `/obat/update/${obatId}`;
-                                document.getElementById('editObatForm').action = formAction;
+                                document.getElementById('editHargaJual').value = data.HargaJual;
+
+                                // Set form action ke endpoint PUT
+                                const form = document.getElementById('editObatForm');
+                                form.action = `/obat/${obatId}`;
                             } else {
                                 Swal.fire({
-                                    title: 'Error fetching data.',
+                                    title: 'Data tidak ditemukan.',
                                     icon: 'error',
                                     confirmButtonText: 'Ok',
                                     confirmButtonColor: '#007bff',
                                 });
                             }
                         })
-                        .catch(error => console.error('Error fetching drug data:', error));
+                        .catch(error => {
+                            console.error('Gagal mengambil data:', error);
+                            Swal.fire({
+                                title: 'Terjadi kesalahan.',
+                                text: 'Gagal mengambil data obat.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                                confirmButtonColor: '#007bff',
+                            });
+                        });
                 });
             });
 
@@ -590,9 +706,6 @@
             });
         });
     </script>
-
-
-
 
     <!-- Sertakan JS untuk modal dan interaksi lainnya -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
