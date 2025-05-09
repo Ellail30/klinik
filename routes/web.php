@@ -1,15 +1,17 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ObatController;
-use App\Http\Controllers\ObatKeluarController;
-use App\Http\Controllers\ObatMasukController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ObatMasukController;
+use App\Http\Controllers\ObatKeluarController;
 use App\Http\Controllers\ConfigUsersController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\KunjunganController;
 
 
 
@@ -20,58 +22,41 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('processLogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth'])->group(function () {
+
 Route::get('/config_user', [ConfigUsersController::class, 'index'])->name('config_user.index');
 Route::post('/config_user/store', [ConfigUsersController::class, 'store'])->name('config_user.store');
 Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy'])->name('config_user.destroy');
-});
 
-Route::middleware(['auth'])->group(function () {
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
-    // Route::get('/dokter/dashboard', function () {
-    //     return view('dokter.dashboard');
-    // })->name('dokter.dashboard');
-
-    // Route::get('/apoteker/dashboard', function () {
-    //     return view('apoteker.dashboard');
-    // })->name('apoteker.dashboard');
-
-    // Route::get('/pimpinan/dashboard', function () {
-    //     return view('pimpinan.dashboard');
-    // })->name('pimpinan.dashboard');
-});
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard/grafik-kunjungan', [DashboardController::class, 'grafikKunjungan'])
+    ->name('dashboard.grafik-kunjungan');
 
 Route::resource('obat', ObatController::class);
-Route::get('/obat', [ObatController::class, 'index'])->name('obat.index');
-Route::delete('/obat/{id}', [ObatController::class, 'destroy'])->name('obat.destroy');
-Route::post('/obat/store', [ObatController::class, 'store'])->name('obat.store');;
-Route::get('/obat/edit/{id}', [ObatController::class, 'edit'])->name('obat.edit');
-Route::put('/obat/update/{id}', [ObatController::class, 'update'])->name('obat.update');
 
 Route::get('/obat/details-by-barcode', [ObatController::class, 'getMedicineDetailsByBarcode']);
 
 Route::resource('supplier', SupplierController::class);
-Route::get('supplier', [SupplierController::class, 'index']);
-Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
-Route::post('/supplier/store', [SupplierController::class, 'store'])->name('supplier.store');;
-Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
-Route::put('/supplier/update/{id}', [SupplierController::class, 'update'])->name('supplier.update');
 
 Route::get('/config_user', [ConfigUsersController::class, 'index'])->name('config_user.index');
 Route::post('/config_user/store', [ConfigUsersController::class, 'store'])->name('config_user.store');
 Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy'])->name('config_user.destroy');
 
 Route::resource('pasien', PasienController::class);
-Route::get('pasien', [PasienController::class, 'index']);Route::delete('/pasien/{id}', [PasienController::class, 'destroy'])->name('pasien.destroy');
-Route::post('/pasien/store', [PasienController::class, 'store'])->name('pasien.store');;
-Route::get('/pasien/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
-Route::put('/pasien/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
+Route::get('/pasien/cari', [PasienController::class, 'cariPasien'])->name('pasien.cari');
+Route::get('/pasien/riwayat-kunjungan/{id}', [PasienController::class, 'riwayatKunjungan'])->name('pasien.riwayat-kunjungan');
 
+
+Route::prefix('pendaftaran')->group(function () {
+    Route::get('/', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
+    Route::get('/create', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
+    Route::get('/cari', [PendaftaranController::class, 'cariPasien'])->name('pendaftaran.cari');
+    Route::post('/store', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+    Route::get('/daftar-ulang/{pasien}', [PendaftaranController::class, 'daftarUlang'])->name('pendaftaran.daftar-ulang');
+    Route::post('/daftar-ulang/{pasien}', [PendaftaranController::class, 'simpanDaftarUlang'])->name('pendaftaran.simpan-daftar-ulang');
+});
+
+Route::get('/kunjungan/{idKunjungan}', [KunjunganController::class, 'show'])->name('kunjungan.show');
+Route::get('/kunjungan/statistik', [KunjunganController::class, 'statistikKunjungan'])->name('statisitk-kunjungan');
 
 Route::resource('obatkeluar', ObatKeluarController::class);
 Route::get('obatkeluar', [ObatKeluarController::class, 'index']);

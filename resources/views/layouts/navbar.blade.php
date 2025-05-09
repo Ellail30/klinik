@@ -19,53 +19,48 @@
                     <!-- Dynamic Date and Time -->
                 </div>
             </div>
-
             <!-- Avatar and Dropdown -->
             <div class="relative">
-                <button
-                    id="avatar-button"
-                    class="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="button"
-                >
-                    <img
-                        src="https://via.placeholder.com/40"
-                        alt="User Avatar"
-                        class="w-10 h-10 rounded-full"
-                    />
-                    <span class="ml-2 text-sm font-medium text-gray-700">Rani</span>
-                    <svg
-                        class="w-4 h-4 ml-1 text-gray-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M19 9l-7 7-7-7"
-                        />
+                <button id="avatar-button" class="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="button">
+                    @php
+                        $user = Auth::user();
+                        $namaLengkap = $user['Nama'] ?? 'Pengguna';
+                        $fotoProfil = $user['FotoProfil'] ?? null;
+                    @endphp
+
+                    @if ($fotoProfil && Storage::exists('public/profil/' . $fotoProfil))
+                        <img src="{{ Storage::url('public/profil/' . $fotoProfil) }}" alt="{{ $namaLengkap }}"
+                            class="w-10 h-10 rounded-full object-cover" />
+                    @else
+                        <div
+                            class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                            {{ substr($namaLengkap, 0, 1) }}
+                        </div>
+                    @endif
+
+                    <span class="ml-2 text-sm font-medium text-gray-700">
+                        {{ $namaLengkap }}
+                    </span>
+                    <svg class="w-4 h-4 ml-1 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div
-                    id="dropdown-menu"
-                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg"
-                >
-                    <a
-                        href="#"
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
+                <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         Ganti Kata Sandi
                     </a>
-                    <a
-                        href="#"
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                        Logout
-                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+
                 </div>
             </div>
         </div>

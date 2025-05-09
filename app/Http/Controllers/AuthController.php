@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -16,19 +17,42 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required',
+            'password' => 'required'
         ]);
 
-        $users = User::where('username', $request->username)->first();
-
-        if ($users && Hash::check($request->password, $users->password)) {
-            session(['users' => $users]);
-            return redirect()->route('dashboard');
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
         }
 
-        return back()->withErrors(['login_error' => 'Username atau password salah']);
+        $loginType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginType => $request->username,
+            'password' => $request->password,
+        ];
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            // dd(Auth::user()->role);
+            // Redirect berdasarkan role
+            switch (Auth::user()->role) {
+                case 'dokter':
+                    return redirect()->intended('/dashboard');
+                case 'pimpinan':
+                    return redirect()->intended('/dashboard');
+                case 'apoteker':
+                    return redirect()->intended('/dashboard');
+                case 'admin':
+                    return redirect()->intended('/dashboard');
+                default:
+                    Auth::logout();
+                    return redirect()->route('login')->withErrors(['login_error' => 'Role tidak dikenali']);
+            }
+        }
+
+        return back()->withErrors(['login_error' => 'Username/email atau password salah'])->withInput();
     }
 
     // public function login(Request $request)
