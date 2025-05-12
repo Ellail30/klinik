@@ -276,7 +276,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-6">
-                    <form action="{{ url('/obat/store') }}" method="POST" id="tambahObatForm">
+                    <form action="{{ url('/obat') }}" method="POST" id="tambahObatForm">
                         @csrf
                         <div class="mb-4">
                             <label for="id_obat" class="block text-sm font-medium text-gray-700">Kode Obat</label>
@@ -302,8 +302,22 @@
                             <select
                                 class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 id="Satuan" name="Satuan" required>
+                                <option value="TABLET">TABLET</option>
+                                <option value="KAPSUL">KAPSUL</option>
+                                <option value="KAPLET">KAPLET</option>
+                                <option value="PIL">PIL</option>
+                                <option value="BUTIR">BUTIR</option>
+                                <option value="STRIP">STRIP</option>
                                 <option value="BOTOL">BOTOL</option>
                                 <option value="TUBE">TUBE</option>
+                                <option value="SACHET">SACHET</option>
+                                <option value="AMPUL">AMPUL</option>
+                                <option value="VIAL">VIAL</option>
+                                <option value="ML">ML</option>
+                                <option value="LITER">LITER</option>
+                                <option value="TETES">TETES</option>
+                                <option value="GRAM">GRAM</option>
+                                <option value="DOSIS">DOSIS</option>
                             </select>
                         </div>
                         <div class="mb-4">

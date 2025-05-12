@@ -34,6 +34,7 @@ Route::get('/dashboard/grafik-kunjungan', [DashboardController::class, 'grafikKu
     ->name('dashboard.grafik-kunjungan');
 
 Route::resource('obat', ObatController::class);
+Route::post('/obat/store', [ObatController::class, 'store']);
 
 Route::get('/obat/details-by-barcode', [ObatController::class, 'getMedicineDetailsByBarcode']);
 
