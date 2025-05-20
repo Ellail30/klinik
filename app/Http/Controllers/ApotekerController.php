@@ -19,7 +19,13 @@ class ApotekerController extends Controller
         $query = Resep::join('pemeriksaan', 'resep.IdPemeriksaan', '=', 'pemeriksaan.IdPemeriksaan')
             ->join('kunjungan', 'pemeriksaan.IdKunjungan', '=', 'kunjungan.IdKunjungan')
             ->join('pasien', 'kunjungan.Nrm', '=', 'pasien.Nrm')
-            ->select('resep.*', 'pasien.NamaPasien', 'pasien.Nrm');
+            ->leftJoin(
+                DB::raw('(SELECT IdResep, SUM(HargaSatuan * Jumlah) as TotalBayar FROM detail_resep GROUP BY IdResep) as dr'),
+                'resep.IdResep',
+                '=',
+                'dr.IdResep'
+            )
+            ->select('resep.*', 'pasien.NamaPasien', 'pasien.Nrm', DB::raw('COALESCE(dr.TotalBayar, 0) as TotalBayar'));
 
         // Filter berdasarkan pencarian
         if ($request->has('search') && $request->search != '') {
@@ -43,7 +49,10 @@ class ApotekerController extends Controller
 
         $reseps = $query->orderBy('resep.TanggalResep', 'desc')->get();
 
-        return view('apoteker.index', compact('reseps'));
+        // Hitung total keseluruhan
+        $grandTotal = $reseps->sum('TotalBayar');
+
+        return view('apoteker.index', compact('reseps', 'grandTotal'));
     }
 
     public function detailResep($id)
@@ -58,10 +67,10 @@ class ApotekerController extends Controller
             return redirect()->route('apoteker.index')->with('error', 'Data resep tidak ditemukan');
         }
 
-        // Hitung total harga
+        // Hitung total harga berdasarkan HargaSatuan di tabel detail_resep
         $totalHarga = 0;
         foreach ($resep->detailResep as $detail) {
-            $totalHarga += $detail->obat->HargaJual * $detail->Jumlah;
+            $totalHarga += $detail->HargaSatuan * $detail->Jumlah;
         }
 
         return view('apoteker.detail-resep', compact('resep', 'totalHarga'));

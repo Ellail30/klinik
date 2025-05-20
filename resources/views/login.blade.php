@@ -51,9 +51,9 @@
                 </button>
             </form>
 
-            <div class="mt-6 text-center">
+            {{-- <div class="mt-6 text-center">
                 <a href="#" class="text-blue-500 text-sm">Forgot Password?</a>
-            </div>
+            </div> --}}
         </div>
     </div>
 

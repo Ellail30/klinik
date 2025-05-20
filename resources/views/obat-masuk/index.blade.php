@@ -1,20 +1,19 @@
-@extends('layouts.app')
+    @extends('layouts.app')
 
 @section('title', 'Daftar Transaksi Pembelian')
 
 @section('content')
     <div class="p-4 sm:ml-64">
-        <div class="content-table">
             <!-- Tombol Tambah -->
-            <div class="btn-tambah mb-3">
+            {{-- <div class="btn-tambah mb-3">
                 <a href="{{ route('obat-masuk.create') }}"
                     class="btn btn-primary py-3 px-6 text-lg font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class='bx bx-plus'></i> Tambah Transaksi Pembelian
                 </a>
-            </div>
+            </div> --}}
 
             <!-- Search dan Sorting -->
-            <div class="row mb-3">
+            {{-- <div class="row mb-3">
                 <!-- Search di sebelah kiri -->
                 <div class="col-md-6">
                     <form action="{{ route('obat-masuk.index') }}" method="GET">
@@ -67,120 +66,223 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </div> --}}
 
-            <!-- Tabel Transaksi Pembelian -->
-            <div class="overflow-x-auto">
-                <table class="table table-striped min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-2 text-left text-base font-semibold">No</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">No Faktur</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Tanggal Faktur</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Waktu</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Tanggal Jatuh Tempo</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Sales</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Apoteker</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Total Item</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Total Harga</th>
-                            <th class="px-4 py-2 text-left text-base font-semibold">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($transaksi as $item)
-                            <tr class="border-t">
-                                <td class="px-4 py-2 text-base">{{ $transaksi->firstItem() + $loop->index }}</td>
-                                <td class="px-4 py-2 text-base">{{ $item->NoFaktur }}</td>
-                                <td class="px-4 py-2 text-base">
-                                    {{ \Carbon\Carbon::parse($item->TglFaktur)->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2 text-base">{{ $item->Waktu }}</td>
-                                <td class="px-4 py-2 text-base">
-                                    {{ \Carbon\Carbon::parse($item->TglJatuhTempo)->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2 text-base">{{ $item->NamaSales }}</td>
-                                <td class="px-4 py-2 text-base">{{ $item->NamaApoteker }}</td>
-                                <td class="px-4 py-2 text-base">{{ $item->total_item }}</td>
-                                <td class="px-4 py-2 text-base">Rp. {{ number_format($item->total_harga, 0, ',', '.') }}
-                                </td>
-                                <td class="px-4 py-2 text-base">
-                                    <a href="{{ route('obat-masuk.show', $item->NoFaktur) }}"
-                                        class="action-btn view-btn text-green-500 hover:text-green-700 mr-2">
-                                        <i class='bx bx-show'></i>
-                                    </a>
-                                    <a href="{{ route('obat-masuk.edit', $item->NoFaktur) }}"
-                                        class="action-btn edit-btn text-blue-500 hover:text-blue-700 mr-2">
-                                        <i class='bx bx-edit'></i>
-                                    </a>
-                                    <button class="action-btn delete-btn text-red-500 hover:text-red-700"
-                                        data-route="{{ route('obat-masuk.destroy', $item->NoFaktur) }}"
-                                        data-name="{{ $item->NoFaktur }}" data-type="transaksi pembelian">
-                                        <i class='bx bx-trash'></i>
-                                    </button>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Data Obat Masuk</h4>
+                    <div>
+                        <a href="{{ route('obat-masuk.create') }}" class="btn btn-success">
+                            <i class='bx bx-plus'></i> Tambah Data
+                        </a>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <i class='bx bx-filter'></i> Filter
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <form action="{{ route('obat-masuk.index') }}" method="GET" class="d-flex">
+                                <input type="text" name="search" class="form-control me-2" placeholder="Cari No Faktur..."
+                                    value="{{ request('search') }}">
+                                <button type="submit"
+                                    class="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 focus:ring-4 focus:ring-blue-500">
+                                    <i class='bx bx-search'></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <form action="{{ route('obat-masuk.export') }}" method="GET" id="exportForm">
+                                <!-- Hidden fields to carry over current filters to PDF export -->
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                                <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+                                <input type="hidden" name="sales_id" value="{{ request('sales_id') }}">
+                                <input type="hidden" name="apoteker_id" value="{{ request('apoteker_id') }}">
 
-            <!-- Pagination -->
-            <div class="pagination-container mt-4 mb-4">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-start">
-                        <!-- Previous Button -->
-                        <li class="page-item {{ $transaksi->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $transaksi->previousPageUrl() }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                                <button type="submit"
+                                    class="btn btn-danger bg-red-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-red-700 focus:ring-4 focus:ring-red-500"
+                                    target="_blank">
+                                    <i class='bx bxs-file-pdf'></i> Export PDF
+                                </button>
+                                </form>
+                                </div>
+                                </div>
 
-                        <!-- Pagination Links -->
-                        @foreach ($transaksi->getUrlRange(1, $transaksi->lastPage()) as $page => $url)
-                            <li class="page-item {{ $transaksi->currentPage() == $page ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $url }}">
-                                    {{ $page }}
-                                </a>
-                            </li>
-                        @endforeach
+                                <!-- Active filters display -->
+                                @if(request('search') || request('start_date') || request('end_date') || request('sales_id') || request('apoteker_id'))
+                                    <div class="alert alert-info mb-3">
+                                        <strong>Filter Aktif:</strong>
+                                        @if(request('search'))
+                                            <span class="badge bg-primary me-2">No Faktur: {{ request('search') }}</span>
+                                        @endif
+                                        @if(request('start_date') && request('end_date'))
+                                            <span class="badge bg-primary me-2">Periode: {{ request('start_date') }} s/d {{ request('end_date') }}</span>
+                                        @elseif(request('start_date'))
+                                            <span class="badge bg-primary me-2">Dari Tanggal: {{ request('start_date') }}</span>
+                                        @elseif(request('end_date'))
+                                            <span class="badge bg-primary me-2">Sampai Tanggal: {{ request('end_date') }}</span>
+                                        @endif
+                                        @if(request('sales_id'))
+                                            <span class="badge bg-primary me-2">Sales:
+                                                {{ $salesList->where('id_sales', request('sales_id'))->first()->NamaSales ?? '' }}</span>
+                                        @endif
+                                        @if(request('apoteker_id'))
+                                            <span class="badge bg-primary me-2">Apoteker:
+                                                {{ $apotekerList->where('id', request('apoteker_id'))->first()->Nama ?? '' }}</span>
+                                        @endif
+                                        <a href="{{ route('obat-masuk.index') }}" class="btn btn-sm btn-outline-danger">Reset Filter</a>
+                                    </div>
+                                @endif
 
-                        <!-- Next Button -->
-                        <li class="page-item {{ !$transaksi->hasMorePages() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $transaksi->nextPageUrl() }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-striped min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">No</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">No Faktur</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Tanggal Faktur</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Waktu</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Tanggal Jatuh Tempo</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Sales</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Apoteker</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Total Item</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Total Harga</th>
+                                                <th class="px-4 py-2 text-left text-base font-semibold">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($transaksi as $index => $item)
+                                                <tr class="border-t">
+                                                    <td class="px-4 py-2 text-base">{{ $transaksi->firstItem() + $index }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ $item->NoFaktur }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ date('d-m-Y', strtotime($item->TglFaktur)) }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ date('H:i', strtotime($item->Waktu)) }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ date('d-m-Y', strtotime($item->TglJatuhTempo)) }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ $item->sales->NamaSales ?? '-' }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ $item->apoteker->Nama ?? '-' }}</td>
+                                                    <td class="px-4 py-2 text-base">{{ $item->detailTransaksi->sum('qty') }}</td>
+                                                    <td class="px-4 py-2 text-base">
+                                                        @php
+                                                            $harga = 0;
+                                                            foreach ($item->detailTransaksi as $detail) {
+                                                                $harga += $detail->HargaBeli * $detail->qty;
+                                                            }
+                                                        @endphp
+                                                        Rp {{ number_format($harga, 0, ',', '.') }}
+                                                    </td>
+                                                    <td class="px-6 py-2 text-base">
+                                                        <a href="{{ route('obat-masuk.show', $item->NoFaktur) }}"
+                                                            class="action-btn view-btn text-green-500 hover:text-green-700 mr-2">
+                                                            <i class='bx bx-show'></i>
+                                                        </a>
+                                                        <a href="{{ route('obat-masuk.edit', $item->NoFaktur) }}"
+                                                            class="action-btn edit-btn text-blue-500 hover:text-blue-700 mr-2">
+                                                            <i class='bx bx-edit'></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="10" class="px-4 py-2 text-center text-base">Tidak ada data</td>
+                                                </tr>
+                                            @endforelse
+                                            </tbody>
+                                                    <tfoot>
+                                                        <tr class="bg-light">
+                                                            <td colspan="8" class="px-4 py-2 text-right font-semibold">Total Keseluruhan:</td>
+                                                            <td class="px-4 py-2 font-semibold">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                    </table>
+                                                    </div>
 
-        </div>
-    </div>
+                                                    <!-- Pagination -->
+                                                    <div class="pagination-container mt-4 mb-4">
+                                                        <nav aria-label="Page navigation">
+                                                            {{ $transaksi->appends(request()->query())->links() }}
+                                                            </nav>
+                                                            </div>
+                                                            </div>
+                                                            </div>
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Delete modal handler
-                const deleteModal = document.getElementById('deleteTransaksiModal');
-                deleteModal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const noFaktur = button.getAttribute('data-no-faktur');
-                    const deleteForm = document.getElementById('deleteTransaksiForm');
-                    deleteForm.action = `/obat-masuk/${noFaktur}`;
-                });
+                                                    <!-- Filter Modal -->
+                                                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="filterModalLabel">Filter Data Obat Masuk</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <form action="{{ route('obat-masuk.index') }}" method="GET">
+                                                                    <div class="modal-body">
+                                                                        <div class="row mb-3">
+                                                                            <div class="col-md-6">
+                                                                                <label for="start_date" class="form-label">Tanggal Mulai</label>
+                                                                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                                                                    value="{{ request('start_date') }}">
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label for="end_date" class="form-label">Tanggal Akhir</label>
+                                                                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                                                                    value="{{ request('end_date') }}">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row mb-3">
+                                                                            <div class="col-md-6">
+                                                                                <label for="sales_id" class="form-label">Sales</label>
+                                                                                <select class="form-select" id="sales_id" name="sales_id">
+                                                                                    <option value="">Semua Sales</option>
+                                                                                    @foreach($salesList as $sales)
+                                                                                        <option value="{{ $sales->id_sales }}" {{ request('sales_id') == $sales->id_sales ? 'selected' : '' }}>
+                                                                                            {{ $sales->NamaSales }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label for="apoteker_id" class="form-label">Apoteker</label>
+                                                                                <select class="form-select" id="apoteker_id" name="apoteker_id">
+                                                                                    <option value="">Semua Apoteker</option>
+                                                                                    @foreach($apotekerList as $apoteker)
+                                                                                        <option value="{{ $apoteker->id }}" {{ request('apoteker_id') == $apoteker->id ? 'selected' : '' }}>
+                                                                                            {{ $apoteker->Nama }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                            </select>
+                                                            </div>
+                                                            </div>
+                                                            <!-- Keep the search value if it exists -->
+                                                            @if(request('search'))
+                                                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                                            @endif
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <a href="{{ route('obat-masuk.index') }}" class="btn btn-secondary">Reset</a>
+                                                                <button type="submit"
+                                                                    class="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 focus:ring-4 focus:ring-blue-500">Terapkan
+                                                                    Filter</button>
+                                                            </div>
+                                                            </form>
+                                                            </div>
+                                                            </div>
+                                                            </div>
 
-                // Dropdown toggle for sorting
-                const dropdownButton = document.getElementById('dropdownSortButton');
-                const dropdownMenu = document.getElementById('dropdownMenu');
+                                </div>
 
-                dropdownButton.addEventListener('click', function() {
-                    dropdownMenu.classList.toggle('hidden');
-                });
 
-                // Close dropdown if clicked outside
-                document.addEventListener('click', function(event) {
-                    if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                        dropdownMenu.classList.add('hidden');
-                    }
-                });
-            });
-        </script>
-    @endpush
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize popovers or tooltips if needed
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+@endpush

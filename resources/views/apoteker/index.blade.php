@@ -3,7 +3,7 @@
 @section('content')
     <div class="p-4 sm:ml-64">
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">Daftar Resep Obat</h1>
+            <h1 class="text-2xl text-black font-semibold mb-4">Daftar Resep Obat</h1>
 
             {{-- Search and Filter Section --}}
             <form action="{{ route('apoteker.index') }}" method="GET" class="mb-4">
@@ -35,6 +35,7 @@
             </form>
 
             {{-- Resep Table --}}
+            {{-- Resep Table --}}
             <div class="overflow-x-auto">
                 <table class="w-full bg-white border">
                     <thead class="bg-gray-100">
@@ -45,6 +46,7 @@
                             <th class="px-4 py-2 text-left">ID Resep</th>
                             <th class="px-4 py-2 text-left">Tanggal Resep</th>
                             <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-right">Total Bayar</th>
                             <th class="px-4 py-2 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -61,23 +63,44 @@
                                         {{ $resep->Status }}
                                     </span>
                                 </td>
+                                <td class="px-4 py-2 text-right">Rp {{ number_format($resep->TotalBayar, 0, ',', '.') }}</td>
                                 <td class="px-4 py-2 text-center">
-                                    <a href="{{ route('apoteker.detailResep', $resep->IdResep) }}" 
-                                       class="text-blue-500 hover:text-blue-700 font-medium">
+                                    <a href="{{ route('apoteker.detailResep', $resep->IdResep) }}" class="text-blue-500 hover:text-blue-700 font-medium">
                                         Detail
                                     </a>
-                                </td>
-                            </tr>
+                                    </td>
+                                    </tr>
                         @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-gray-500">
-                                    Tidak ada resep ditemukan
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                        <tr>
+                                            <td colspan="8" class="text-center py-4 text-gray-500">
+                                                Tidak ada resep ditemukan
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="bg-gray-50 font-bold">
+                                            <td colspan="6" class="px-4 py-3 text-right">Total Keseluruhan:</td>
+                                            <td class="px-4 py-3 text-right">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                    </table>
+                                    </div>
+
+                                    {{-- Export Button --}}
+                                    <div class="mt-4 flex justify-end">
+                                        <a href="{{ route('obat-keluar.export', ['search' => request('search'), 'status' => request('status'), 'tanggal' => request('tanggal')]) }}"
+                                            class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 flex items-center"
+                                            target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Export PDF
+                                        </a>
+                                    </div>
         </div>
     </div>
 @endsection

@@ -84,24 +84,43 @@ class ObatController extends Controller
     // Method untuk menambah data obat
     public function store(Request $request)
     {
+        // Daftar satuan yang diperbolehkan
+        $satuanOptions = [
+            'TABLET',
+            'KAPSUL',
+            'KAPLET',
+            'PIL',
+            'BUTIR',
+            'STRIP',
+            'BOTOL',
+            'TUBE',
+            'SACHET',
+            'AMPUL',
+            'VIAL',
+            'ML',
+            'LITER',
+            'TETES',
+            'GRAM',
+            'DOSIS'
+        ];
+
         // Validasi data input
         $validatedData = $request->validate([
-            'id_obat' => 'required|unique:obat|max:255',
+            'id_obat' => 'required|unique:obat,id_obat|max:255',
             'NamaObat' => 'required|max:255',
-            'Satuan' => 'required|in:BOTOL,TUBE',
+            'Satuan' => 'required|in:' . implode(',', $satuanOptions),
             'stok' => 'required|integer|min:1',
             'TglEXP' => 'required|date',
             'NoBatch' => 'required|max:255',
             'HargaBeli' => 'required|numeric|min:0',
             'HargaJual' => 'required|numeric|min:0',
-
         ]);
 
         // Simpan data obat ke dalam database
         Obat::create($validatedData);
 
         // Redirect kembali dengan pesan sukses
-        return redirect('/obat')->with('success', 'Obat berhasil ditambahkan');
+        return redirect()->route('obat.index')->with('success', 'Obat berhasil ditambahkan');
     }
 
     public function edit($id)

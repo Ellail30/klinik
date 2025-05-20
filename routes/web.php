@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
@@ -29,12 +30,12 @@ Route::get('/config_user', [ConfigUsersController::class, 'index'])->name('confi
 Route::post('/config_user/store', [ConfigUsersController::class, 'store'])->name('config_user.store');
 Route::delete('/config_user/{username}', [ConfigUsersController::class, 'destroy'])->name('config_user.destroy');
 
-Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard/grafik-kunjungan', [DashboardController::class, 'grafikKunjungan'])
     ->name('dashboard.grafik-kunjungan');
 
 Route::resource('obat', ObatController::class);
-Route::post('/obat/store', [ObatController::class, 'store']);
+// Route::post('/obat/store', [ObatController::class, 'store']);
 
 Route::get('/obat/details-by-barcode', [ObatController::class, 'getMedicineDetailsByBarcode']);
 
@@ -128,6 +129,18 @@ Route::get('/cari-barcode', [ObatMasukController::class, 'cariBarcode']);
 Route::get('/obat_kadaluwarsa', function () {
     return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa
 });
+
+
+Route::get('/laporan-obat-masuk/export-pdf', [LaporanController::class, 'exportPdfObatMasuk'])->name('obat-masuk.export');
+Route::get('/laporan-obat-masuk/export-pdf/{noFaktur}', [LaporanController::class, 'exportPdfDetailObatMasuk'])
+    ->where('noFaktur', '.*') // Wildcard agar menangkap seluruh bagian termasuk slash
+    ->name('obat-masuk.detail.export');
+
+
+Route::get('/laporan-obat-keluar/export-pdf', [LaporanController::class, 'exportPdfObatKeluar'])->name('obat-keluar.export');
+
+Route::get('/laporan-obat-keluar/export-pdf/{id}', [LaporanController::class, 'exportPdfDetailObatKeluar'])->name('obat-masuk.detail.export');
+
 
 
 Route::get('/laporan_keluar', function () {

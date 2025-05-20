@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Obat;
+use App\Models\User;
 use App\Models\Sales;
 use App\Models\ObatMasuk;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\TransaksiPembelian;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -128,65 +130,51 @@ class ObatMasukController extends Controller
      */
     public function index(Request $request)
     {
-        // Base query for transaksi pembelian using subquery to calculate totals
-        $query = DB::table(function ($subquery) {
-            $subquery->from('transaksi_pembelian')
-                ->leftJoin('det_transaksi_pembelian', 'transaksi_pembelian.NoFaktur', '=', 'det_transaksi_pembelian.NoFaktur')
-                ->leftJoin('sales', 'transaksi_pembelian.id_sales', '=', 'sales.id_sales')
-                ->leftJoin('users', 'transaksi_pembelian.id_Apoteker', '=', 'users.id')
-                ->select(
-                    'transaksi_pembelian.NoFaktur',
-                    'transaksi_pembelian.TglFaktur',
-                    'transaksi_pembelian.Waktu',
-                    'transaksi_pembelian.TglJatuhTempo',
-                    'sales.NamaSales',
-                    'users.Nama',
-                    DB::raw('COUNT(det_transaksi_pembelian.NoDetBeli) as total_item'),
-                    DB::raw('SUM(det_transaksi_pembelian.qty * det_transaksi_pembelian.HargaBeli) as total_harga')
-                )
-                ->groupBy(
-                    'transaksi_pembelian.NoFaktur',
-                    'transaksi_pembelian.TglFaktur',
-                    'transaksi_pembelian.Waktu',
-                    'transaksi_pembelian.TglJatuhTempo',
-                    'sales.NamaSales',
-                'users.Nama'
-                );
-        }, 'transaksi_pembelian_with_totals');
+        $query = TransaksiPembelian::with(['sales', 'apoteker', 'detailTransaksi', 'detailTransaksi.obat']);
 
-        // Search functionality
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('NoFaktur', 'LIKE', "%{$search}%")
-                    ->orWhere('NamaSales', 'LIKE', "%{$search}%")
-                    ->orWhere('Nama', 'LIKE', "%{$search}%");
-            });
+        // Filter by search (NoFaktur)
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('NoFaktur', 'like', "%{$search}%");
         }
 
-        // Sorting functionality
-        $sortOptions = [
-            'NoFaktur_asc' => ['NoFaktur', 'asc'],
-            'NoFaktur_desc' => ['NoFaktur', 'desc'],
-            'TglFaktur_asc' => ['TglFaktur', 'asc'],
-            'TglFaktur_desc' => ['TglFaktur', 'desc'],
-            'TglJatuhTempo_asc' => ['TglJatuhTempo', 'asc'],
-            'TglJatuhTempo_desc' => ['TglJatuhTempo', 'desc']
-        ];
-
-        if ($request->has('sort_by') && isset($sortOptions[$request->input('sort_by')])) {
-            $sortOption = $sortOptions[$request->input('sort_by')];
-            $query->orderBy($sortOption[0], $sortOption[1]);
-        } else {
-            // Default sorting
-            $query->orderBy('TglFaktur', 'desc');
+        // Filter by date range
+        if ($request->has('start_date') && $request->start_date != '') {
+            $query->whereDate('TglFaktur', '>=', $request->start_date);
         }
 
-        // Paginate results
+        if ($request->has('end_date') && $request->end_date != '') {
+            $query->whereDate('TglFaktur', '<=', $request->end_date);
+        }
+
+        // Filter by sales
+        if ($request->has('sales_id') && $request->sales_id != '') {
+            $query->where('id_sales', $request->sales_id);
+        }
+
+        // Filter by apoteker
+        if ($request->has('apoteker_id') && $request->apoteker_id != '') {
+            $query->where('id_Apoteker', $request->apoteker_id);
+        }
+
         $transaksi = $query->paginate(10);
 
-        return view('obat-masuk.index', compact('transaksi'));
+        // Calculate total price for displayed items
+        $totalHarga = 0;
+        foreach ($transaksi as $item) {
+            foreach ($item->detailTransaksi as $detail) {
+                $totalHarga += $detail->HargaBeli * $detail->qty;
+            }
+        }
+
+        // Get all sales and apoteker for filters
+        $salesList = Sales::all();
+        $apotekerList = User::where('role', 'apoteker')->get();
+
+        return view('obat-masuk.index', compact('transaksi', 'totalHarga', 'salesList', 'apotekerList'));
     }
+
+
 
 
     /**

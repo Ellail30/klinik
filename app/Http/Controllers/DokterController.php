@@ -186,6 +186,8 @@ class DokterController extends Controller
             // Simpan detail resep
             $totalItems = count($request->obat);
             for ($i = 0; $i < $totalItems; $i++) {
+                $obat = \App\Models\Obat::where('id_obat', $request->obat[$i])->first();
+
                 $detail = new \App\Models\DetailResep();
                 $detail->IdResep = $idResep;
                 $detail->IdObat = $request->obat[$i];
@@ -193,10 +195,10 @@ class DokterController extends Controller
                 $detail->Jumlah = $request->jumlah[$i];
                 $detail->WaktuKonsumsi = $request->waktu_konsumsi[$i];
                 $detail->Catatan = $request->catatan[$i] ?? null;
+                $detail->HargaSatuan = $obat ? $obat->HargaJual : 0; // Ambil HargaJual dari tabel obat
                 $detail->save();
 
-                // Kurangi stok obat
-                $obat = \App\Models\Obat::where('id_obat', $request->obat[$i])->first();
+                // Kurangi stok obat jika ditemukan
                 if ($obat) {
                     $obat->stok -= $request->jumlah[$i];
                     $obat->save();

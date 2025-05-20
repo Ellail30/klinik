@@ -8,7 +8,16 @@
         <div class="content-detail">
             <!-- Header Transaksi -->
             <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">Detail Transaksi Pembelian</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-blue-600">Detail Transaksi Pembelian</h2>
+                    <a href="{{ route('obat-masuk.detail.export', urlencode($transaksi->NoFaktur)) }}"
+                        class="btn btn-danger bg-red-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-red-700 focus:ring-4 focus:ring-red-500">
+                        <i class='bx bxs-file-pdf'></i> Export PDF
+                    </a>
+
+
+                </div>
+
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -32,7 +41,7 @@
                             <span class="text-black">{{ $transaksi->NamaSales }}</span>
                         </p>
                         <p class="text-gray-600 font-semibold">Apoteker:
-                            <span class="text-black">{{ $transaksi->NamaApoteker }}</span>
+                            <span class="text-black">{{ $transaksi->Nama }}</span>
                         </p>
                     </div>
                 </div>
@@ -92,22 +101,15 @@
                 Kembali
                 </a>
 
-                <button class="action-btn delete-btn text-red-500 hover:text-red-700"
+                {{-- <button class="action-btn delete-btn text-red-500 hover:text-red-700"
                     data-route="{{ route('obat-masuk.destroy', $transaksi->NoFaktur) }}"
                     data-name="{{ $transaksi->NoFaktur }}" data-type="transaksi pembelian">
                     <i class='bx bx-trash mr-2'></i>Hapus Transaksi
-                </button>
+                </button> --}}
             </div>
 
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Optional: Any specific scripts for the detail page
-                // For example, print functionality or additional interactions
-            });
-        </script>
-    @endpush
+
 @endsection

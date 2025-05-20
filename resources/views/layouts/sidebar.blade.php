@@ -20,11 +20,11 @@
                 <img src="{{ asset('images/clinic.png') }}" alt="clinic logo" class="w-20 h-20 rounded-full shadow-md">
                 <h1 class="text-xl font-semibold">Klinik PKU Berbah</h1>
             </div>
-            <!-- Navigation -->            
+            <!-- Navigation -->
             @php
-                $role = Auth::user()->role;
+$role = Auth::user()->role;
             @endphp
-
+            
             <ul class="space-y-4 font-medium">
                 {{-- DASHBOARD --}}
                 <li>
@@ -34,12 +34,12 @@
                         Dashboard
                     </a>
                 </li>
-
+            
                 {{-- GENERAL (PIMPINAN) --}}
                 @if ($role == 'pimpinan')
                     <li>
                         @php
-                            $isActive = request()->is('dashboard') || request()->is('config_user');
+    $isActive = request()->is('dashboard') || request()->is('config_user');
                         @endphp
                         <button
                             class="flex items-center justify-between w-full px-4 py-3 rounded-lg transition {{ $isActive ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
@@ -63,11 +63,11 @@
                         </ul>
                     </li>
                 @endif
-
+            
                 {{-- DATA MASTER --}}
                 @if (in_array($role, ['dokter', 'apoteker']))
                     @php
-                        $isActive = request()->is('obat*') || request()->is('supplier*') || request()->is('pasien*');
+    $isActive = request()->is('obat') || request()->is('supplier*') || request()->is('pasien*');
                     @endphp
                     <li>
                         <button
@@ -83,7 +83,7 @@
                             @if ($role != 'admin')
                                 <li>
                                     <a href="{{ url('/obat') }}"
-                                        class="block px-4 py-2 rounded-lg {{ request()->is('obat*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat</a>
+                                        class="block px-4 py-2 rounded-lg {{ request()->is('obat') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat</a>
                                 </li>
                             @endif
                             @if ($role == 'apoteker')
@@ -101,11 +101,11 @@
                         </ul>
                     </li>
                 @endif
-
+            
                 {{-- TRANSAKSI (APOTEKER) --}}
                 @if ($role == 'apoteker')
                     @php
-                        $isActive = request()->is('obatmasuk*') || request()->is('apoteker*');
+    $isActive = request()->is('obat-masuk*') || request()->is('apoteker*');
                     @endphp
                     <li>
                         <button
@@ -120,7 +120,7 @@
                             class="{{ $isActive ? '' : 'hidden' }} space-y-2 pl-6 mt-2 transition-all duration-300 ease-in-out {{ $isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-10px]' }}">
                             <li>
                                 <a href="{{ route('obat-masuk.index') }}"
-                                    class="block px-4 py-2 rounded-lg {{ request()->is('obatmasuk*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
+                                    class="block px-4 py-2 rounded-lg {{ request()->is('obat-masuk*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
                                     Masuk</a>
                             </li>
                             <li>
@@ -131,7 +131,7 @@
                         </ul>
                     </li>
                 @endif
-
+            
                 {{-- RESEP (DOKTER) --}}
                 @if ($role == 'dokter')
                     <li>
@@ -142,7 +142,7 @@
                         </a>
                     </li>
                 @endif
-
+            
                 {{-- INPUT PENDAFTARAN (ADMIN) --}}
                 @if ($role == 'admin')
                     <li>
@@ -160,11 +160,11 @@
                         </a>
                     </li>
                 @endif
-
+            
                 {{-- LAPORAN (PIMPINAN) --}}
                 @if ($role == 'pimpinan')
                     @php
-                        $isActive = request()->is('laporan_*');
+    $isActive = request()->is('laporan_*');
                     @endphp
                     <li>
                         <button
@@ -195,9 +195,9 @@
                         </ul>
                     </li>
                 @endif
-
+            
                 {{-- AKUN --}}
-                <li>
+                {{-- <li>
                     @php
                         $isActive = request()->is('logout') || request()->is('change-password');
                     @endphp
@@ -219,42 +219,42 @@
                                 class="block px-4 py-2 rounded-lg hover:bg-blue-700">Logout</a>
                         </li>
                     </ul>
-                </li>
-            </ul>
+                </li> --}}
+                </ul>
+                
+                </div>
+                </aside>
+                </div>
+                
+                <script>
+                    // Get the hamburger button and sidebar
+                    const hamburgerButton = document.querySelector("[data-drawer-toggle]");
+                    const sidebar = document.getElementById("default-sidebar");
 
-        </div>
-    </aside>
-</div>
+                    // Toggle sidebar visibility when the hamburger button is clicked
+                    hamburgerButton.addEventListener("click", () => {
+                        sidebar.classList.toggle("hidden"); // Toggle the visibility of the sidebar
+                    });
 
-<script>
-    // Get the hamburger button and sidebar
-    const hamburgerButton = document.querySelector("[data-drawer-toggle]");
-    const sidebar = document.getElementById("default-sidebar");
-
-    // Toggle sidebar visibility when the hamburger button is clicked
-    hamburgerButton.addEventListener("click", () => {
-        sidebar.classList.toggle("hidden"); // Toggle the visibility of the sidebar
-    });
-
-    // For toggling dropdowns in the sidebar
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll("aside button").forEach((button) => {
-            button.addEventListener("click", () => {
-                const dropdown = button.nextElementSibling;
-                if (dropdown.classList.contains("hidden")) {
-                    dropdown.classList.remove("hidden");
-                    setTimeout(() => {
-                        dropdown.classList.add("opacity-100", "translate-y-0");
-                        dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
-                    }, 10);
-                } else {
-                    dropdown.classList.add("opacity-0", "translate-y-[-10px]");
-                    dropdown.classList.remove("opacity-100", "translate-y-0");
-                    setTimeout(() => {
-                        dropdown.classList.add("hidden");
-                    }, 300);
-                }
-            });
-        });
-    });
-</script>
+                    // For toggling dropdowns in the sidebar
+                    document.addEventListener("DOMContentLoaded", () => {
+                        document.querySelectorAll("aside button").forEach((button) => {
+                            button.addEventListener("click", () => {
+                                const dropdown = button.nextElementSibling;
+                                if (dropdown.classList.contains("hidden")) {
+                                    dropdown.classList.remove("hidden");
+                                    setTimeout(() => {
+                                        dropdown.classList.add("opacity-100", "translate-y-0");
+                                        dropdown.classList.remove("opacity-0", "translate-y-[-10px]");
+                                    }, 10);
+                                } else {
+                                    dropdown.classList.add("opacity-0", "translate-y-[-10px]");
+                                    dropdown.classList.remove("opacity-100", "translate-y-0");
+                                    setTimeout(() => {
+                                        dropdown.classList.add("hidden");
+                                    }, 300);
+                                }
+                            });
+                        });
+                    });
+                </script>

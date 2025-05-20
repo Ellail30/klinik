@@ -3,57 +3,63 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Obat;
+use App\Models\Resep;
 use App\Models\Pasien;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
+use App\Models\TransaksiPembelian;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
-        // Hitung total transaksi pembelian
-        $totalTransaksi = DB::table('det_transaksi_pembelian')->count();
+        // Current date and 3 months from now for expiry check
+        $today = Carbon::now();
+        $threeMonthsLater = Carbon::now()->addMonths(3);
 
-        // Statistik Harian
-        $hariIni = Carbon::today();
-        $kunjunganHarian = Kunjungan::whereDate('TanggalKunjungan', $hariIni)
-            ->groupBy('Poli')
-            ->selectRaw('Poli, COUNT(*) as total')
-            ->get();
+        // Get statistics
+        $totalPembelian = TransaksiPembelian::count();
+        $totalPenjualan = Resep::where('Status', 'Sudah Diambil')->count();
 
-        // Statistik Bulanan
-        $bulanIni = Carbon::now();
-        $kunjunganBulanan = Kunjungan::whereYear('TanggalKunjungan', $bulanIni->year)
-            ->whereMonth('TanggalKunjungan', $bulanIni->month)
-            ->groupBy('Poli')
-            ->selectRaw('Poli, COUNT(*) as total')
-            ->get();
+        // Total revenue from sales (resep yang sudah diambil)
+        $totalRevenue = DB::table('pembayaran')
+            ->join('resep', 'pembayaran.IdResep', '=', 'resep.IdResep')
+            ->where('resep.Status', 'Sudah Diambil')
+            ->sum('pembayaran.TotalBayar');
 
-        // Statistik Status Kunjungan Hari Ini
-        $statusKunjungan = Kunjungan::whereDate('TanggalKunjungan', $hariIni)
-            ->groupBy('Status')
-            ->selectRaw('Status, COUNT(*) as total')
-            ->get();
+        // Total items sold
+        $totalBarangKeluar = DB::table('detail_resep')
+            ->join('resep', 'detail_resep.IdResep', '=', 'resep.IdResep')
+            ->where('resep.Status', 'Sudah Diambil')
+            ->sum('detail_resep.Jumlah');
 
-        // Total Pasien
-        $totalPasien = Pasien::count();
+        // Count of expired medications
+        $totalKadaluarsa = Obat::where('TglExp', '<', $today)->count();
 
-        // Pasien Baru Bulan Ini
-        $pasienBaruBulanIni = Pasien::whereYear('created_at', $bulanIni->year)
-            ->whereMonth('created_at', $bulanIni->month)
-            ->count();
+        // Get medications that will expire within 3 months
+        $expiringMeds = Obat::where('TglExp', '<', $today)
+            ->where('TglExp', '<=', $threeMonthsLater)
+            ->orderBy('TglExp', 'asc')
+            ->get(['id_obat', 'NamaObat', 'TglExp', 'stok', 'Satuan']);
 
-        return view('dashboard', [
-            'user' => session('user'),
-            'kunjunganHarian' => $kunjunganHarian,
-            'kunjunganBulanan' => $kunjunganBulanan,
-            'statusKunjungan' => $statusKunjungan,
-            'totalPasien' => $totalPasien,
-            'pasienBaruBulanIni' => $pasienBaruBulanIni,
-            'totalTransaksi' => $totalTransaksi
-        ]);
+        // Get medications that need restock (stock less than minimum required)
+        $lowStockMeds = Obat::whereRaw('stok < StokMinumum')
+            ->orderBy('stok', 'asc')
+            ->get(['id_obat', 'NamaObat', 'stok', 'StokMinumum', 'Satuan']);
+
+        return view('dashboard', compact(
+            'totalPembelian',
+            'totalPenjualan',
+            'totalRevenue',
+            'totalBarangKeluar',
+            'totalKadaluarsa',
+            'expiringMeds',
+            'lowStockMeds'
+        ));
     }
+
 
     public function grafikKunjungan()
     {

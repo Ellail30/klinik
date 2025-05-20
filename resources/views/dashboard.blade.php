@@ -42,133 +42,174 @@
         {{-- Statistics --}}
         @if (Auth::user()->role == 'apoteker')
             <section>
-                <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                    <div class="sm:hidden">
-                        <label for="tabs" class="sr-only">Select tab</label>
-                        <select id="tabs"
-                            class="bg-gray-50 border-0 border-b border-gray-200 text-gray-900 text-sm rounded-t-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option>Obat Masuk</option>
-                            <option>Obat Keluar</option>
-                            <option>Persediaan</option>
-                        </select>
-                    </div>
-                    <ul class="hidden text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400 rtl:divide-x-reverse"
-                        id="fullWidthTab" data-tabs-toggle="#fullWidthTabContent" role="tablist">
-                        <li class="w-full">
-                            <button id="stats-tab" data-tabs-target="#stats" type="button" role="tab"
-                                aria-controls="stats" aria-selected="true"
-                                class="inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
-                                Obat Masuk
-                            </button>
-                        </li>
-                        <li class="w-full">
-                            <button id="about-tab" data-tabs-target="#about" type="button" role="tab"
-                                aria-controls="about" aria-selected="false"
-                                class="inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
-                                Obat Keluar
-                            </button>
-                        </li>
-                        <li class="w-full">
-                            <button id="faq-tab" data-tabs-target="#faq" type="button" role="tab" aria-controls="faq"
-                                aria-selected="false"
-                                class="inline-block w-full p-4 rounded-se-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
-                                Persediaan
-                            </button>
-                        </li>
-                    </ul>
-                    <div id="fullWidthTabContent" class="border-t border-gray-200 dark:border-gray-600">
-                        <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="stats" role="tabpanel"
-                            aria-labelledby="stats-tab">
-                            <dl
-                                class="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
-                                <div class="flex flex-col items-center justify-center">
-                                    <dt class="mb-2 text-3xl font-extrabold">{{ $totalTransaksi }}</dt>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <dt class="mb-2 text-3xl font-extrabold">0</dt>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <dt class="mb-2 text-3xl font-extrabold">0</dt>
-                                </div>
-                            </dl>
-                        </div>
-                        <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="about" role="tabpanel"
-                            aria-labelledby="about-tab">
-                            <h2 class="mb-5 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">We invest
-                                in the world's potential</h2>
-                            <ul role="list" class="space-y-4 text-gray-500 dark:text-gray-400">
-                                <li class="flex space-x-2 rtl:space-x-reverse items-center">
-                                    <svg class="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                                    </svg>
-                                    <span class="leading-tight">Dynamic reports and dashboards</span>
-                                </li>
-                                <li class="flex space-x-2 rtl:space-x-reverse items-center">
-                                    <svg class="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                                    </svg>
-                                    <span class="leading-tight">Templates for everyone</span>
-                                </li>
-                                <li class="flex space-x-2 rtl:space-x-reverse items-center">
-                                    <svg class="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                                    </svg>
-                                    <span class="leading-tight">Development workflow</span>
-                                </li>
-                                <li class="flex space-x-2 rtl:space-x-reverse items-center">
-                                    <svg class="flex-shrink-0 w-3.5 h-3.5 text-blue-600 dark:text-blue-500"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path
-                                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                                    </svg>
-                                    <span class="leading-tight">Limitless business automation</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="hidden p-4 bg-white rounded-lg dark:bg-gray-800" id="faq" role="tabpanel"
-                            aria-labelledby="faq-tab">
-                            <div id="accordion-flush" data-accordion="collapse"
-                                data-active-classes="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                data-inactive-classes="text-gray-500 dark:text-gray-400">
-                                <h2 id="accordion-flush-heading-1">
-                                    <button type="button"
-                                        class="flex items-center justify-between w-full py-5 font-medium text-left rtl:text-right text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400"
-                                        data-accordion-target="#accordion-flush-body-1" aria-expanded="true"
-                                        aria-controls="accordion-flush-body-1">
-                                        <span>What is Flowbite?</span>
-                                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M9 5 5 1 1 5" />
-                                        </svg>
-                                    </button>
-                                </h2>
-                                <div id="accordion-flush-body-1" class="hidden"
-                                    aria-labelledby="accordion-flush-heading-1">
-                                    <div class="py-5 border-b border-gray-200 dark:border-gray-700">
-                                        <p class="mb-2 text-gray-500 dark:text-gray-400">Flowbite is an open-source library
-                                            of interactive components built on top of Tailwind CSS including buttons,
-                                            dropdowns, modals, navbars, and more.</p>
-                                        <p class="text-gray-500 dark:text-gray-400">Check out this guide to learn how to <a
-                                                href="/docs/getting-started/introduction/"
-                                                class="text-blue-600 dark:text-blue-500 hover:underline">get started</a>
-                                            and start developing websites even faster with components on top of Tailwind
-                                            CSS.</p>
-                                    </div>
-                                </div>
-                                {{-- Rest of the accordion items --}}
+                <div class="mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+                    <p class="text-gray-600">Overview statistik dan peringatan sistem</p>
+                </div>
+            
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                    <!-- Card 1: Total Pembelian -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 rounded-md p-3 bg-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-sm font-medium text-gray-600">Total Pembelian</h2>
+                                <p class="text-xl font-semibold text-gray-800">{{ number_format($totalPembelian) }}</p>
                             </div>
                         </div>
+                    </div>
+            
+                    <!-- Card 2: Total Penjualan -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 rounded-md p-3 bg-green-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-sm font-medium text-gray-600">Total Penjualan</h2>
+                                <p class="text-xl font-semibold text-gray-800">{{ number_format($totalPenjualan) }}</p>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 3: Total Revenue -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 rounded-md p-3 bg-yellow-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-sm font-medium text-gray-600">Total Pendapatan</h2>
+                                <p class="text-xl font-semibold text-gray-800">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 4: Total Items Out -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 rounded-md p-3 bg-indigo-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-sm font-medium text-gray-600">Barang Keluar</h2>
+                                <p class="text-xl font-semibold text-gray-800">{{ number_format($totalBarangKeluar) }}</p>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 5: Expired Items -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 rounded-md p-3 bg-red-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-sm font-medium text-gray-600">Total Kadaluarsa</h2>
+                                <p class="text-xl font-semibold text-gray-800">{{ number_format($totalKadaluarsa) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Expiring Medications Table -->
+                <div class="bg-white shadow rounded-lg mb-8">
+                    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Obat Hampir Kadaluarsa</h3>
+                        <p class="mt-1 text-sm text-gray-500">Daftar obat yang akan kadaluarsa dalam 3 bulan ke depan</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Obat</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Obat</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Kadaluarsa</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa Waktu</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @forelse ($expiringMeds as $obat)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $obat->id_obat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->NamaObat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($obat->TglExp)->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                            $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($obat->TglExp), false);
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {{ $daysLeft <= 30 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                            {{ $daysLeft }} hari
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->stok }} {{ $obat->Satuan }}</td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">Tidak ada obat yang akan kadaluarsa dalam 3 bulan kedepan</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            
+                <!-- Low Stock Medications Table -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Obat Stok Menipis</h3>
+                        <p class="mt-1 text-sm text-gray-500">Daftar obat yang memerlukan restok segera</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Obat</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Obat</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Saat Ini</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Minimum</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @forelse ($lowStockMeds as $obat)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $obat->id_obat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->NamaObat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->stok }} {{ $obat->Satuan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->StokMinumum }} {{ $obat->Satuan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                            $percentage = ($obat->stok / $obat->StokMinumum) * 100;
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {{ $percentage <= 50 ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800' }}">
+                                            Perlu Restok
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">Tidak ada obat yang memerlukan restok</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
