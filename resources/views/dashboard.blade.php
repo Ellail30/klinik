@@ -46,7 +46,7 @@
                     <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
                     <p class="text-gray-600">Overview statistik dan peringatan sistem</p>
                 </div>
-            
+
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                     <!-- Card 1: Total Pembelian -->
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-            
+
                     <!-- Card 2: Total Penjualan -->
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex items-center">
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-            
+
                     <!-- Card 3: Total Revenue -->
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex items-center">
@@ -93,7 +93,7 @@
                             </div>
                         </div>
                     </div>
-            
+
                     <!-- Card 4: Total Items Out -->
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex items-center">
@@ -108,7 +108,7 @@
                             </div>
                         </div>
                     </div>
-            
+
                     <!-- Card 5: Expired Items -->
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex items-center">
@@ -124,7 +124,7 @@
                         </div>
                     </div>
                 </div>
-            
+
                 <!-- Expiring Medications Table -->
                 <div class="bg-white shadow rounded-lg mb-8">
                     <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
@@ -150,7 +150,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($obat->TglExp)->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
-                                            $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($obat->TglExp), false);
+        $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($obat->TglExp), false);
                                         @endphp
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                             {{ $daysLeft <= 30 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
@@ -168,7 +168,7 @@
                         </table>
                     </div>
                 </div>
-            
+
                 <!-- Low Stock Medications Table -->
                 <div class="bg-white shadow rounded-lg">
                     <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
@@ -195,7 +195,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->StokMinimum }} {{ $obat->Satuan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
-                                            $percentage = ($obat->stok / $obat->StokMinimum) * 100;
+        $percentage = ($obat->stok / $obat->StokMinimum) * 100;
                                         @endphp
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                             {{ $percentage <= 50 ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800' }}">
@@ -315,77 +315,102 @@
     </div>
 
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Ambil data grafik kunjungan
-                fetch('/dashboard/grafik-kunjungan')
-                    .then(response => response.json())
-                    .then(data => {
-                        const ctx = document.getElementById('grafikKunjungan').getContext('2d');
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                    // Ambil data grafik kunjungan
+                    fetch('/dashboard/grafik-kunjungan')
+                        .then(response => response.json())
+                        .then(data => {
+                            const ctx = document.getElementById('grafikKunjungan').getContext('2d');
 
-                        // Persiapkan data untuk chart
-                        const labels = [];
-                        const datasets = {
-                            Umum: [],
-                            Kandungan: [],
-                            Gigi: []
-                        };
+                            // Persiapkan data untuk chart
+                            const labels = [];
+                            const datasets = {
+                                Umum: [],
+                                Kandungan: [],
+                                Gigi: []
+                            };
 
-                        // Proses data
-                        Object.keys(data).forEach(poli => {
-                            data[poli].forEach(item => {
-                                if (!labels.includes(item.tanggal)) {
-                                    labels.push(item.tanggal);
-                                }
-
-                                // Pastikan setiap label memiliki data untuk setiap poli
-                                if (!datasets[poli]) {
-                                    datasets[poli] = new Array(labels.length).fill(0);
-                                }
-
-                                const index = labels.indexOf(item.tanggal);
-                                datasets[poli][index] = item.total;
-                            });
-                        });
-
-                        // Buat dataset untuk chart
-                        const chartDatasets = Object.keys(datasets).map(poli => ({
-                            label: poli,
-                            data: datasets[poli],
-                            borderColor: poli === 'Umum' ? 'rgb(54, 162, 235)' : poli === 'Kandungan' ?
-                                'rgb(255, 99, 132)' : 'rgb(75, 192, 192)',
-                            tension: 0.1
-                        }));
-
-                        new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: labels,
-                                datasets: chartDatasets
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    title: {
-                                        display: false
+                            // Proses data
+                            Object.keys(data).forEach(poli => {
+                                data[poli].forEach(item => {
+                                    if (!labels.includes(item.tanggal)) {
+                                        labels.push(item.tanggal);
                                     }
+
+                                    // Pastikan setiap label memiliki data untuk setiap poli
+                                    if (!datasets[poli]) {
+                                        datasets[poli] = new Array(labels.length).fill(0);
+                                    }
+
+                                    const index = labels.indexOf(item.tanggal);
+                                    datasets[poli][index] = item.total;
+                                });
+                            });
+
+                            // Tailwind-friendly colors with good contrast
+                            const colors = {
+                                Umum: {
+                                    background: 'rgba(59, 130, 246, 0.7)',      // blue-500 with transparency
+                                    border: 'rgb(37, 99, 235)'                  // blue-600
                                 },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        ticks: {
-                                            stepSize: 1,
-                                            callback: function(value) {
-                                                return Number.isInteger(value) ? value : null;
+                                Kandungan: {
+                                    background: 'rgba(239, 68, 68, 0.7)',       // red-500 with transparency
+                                    border: 'rgb(220, 38, 38)'                  // red-600
+                                },
+                                Gigi: {
+                                    background: 'rgba(16, 185, 129, 0.7)',      // emerald-500 with transparency
+                                    border: 'rgb(5, 150, 105)'                  // emerald-600
+                                }
+                            };
+
+                            // Buat dataset untuk chart
+                            const chartDatasets = Object.keys(datasets).map(poli => ({
+                                label: poli,
+                                data: datasets[poli],
+                                backgroundColor: colors[poli].background,
+                                borderColor: colors[poli].border,
+                                borderWidth: 1
+                            }));
+
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: chartDatasets
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false,
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                stepSize: 1,
+                                                callback: function (value) {
+                                                    return Number.isInteger(value) ? value : null;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
-                    });
-            });
-        </script>
+                });
+          </script>
     @endpush
 @endsection

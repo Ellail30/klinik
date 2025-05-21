@@ -18,6 +18,7 @@ class DashboardController extends Controller
         // Current date and 3 months from now for expiry check
         $today = Carbon::now();
         $threeMonthsLater = Carbon::now()->addMonths(3);
+        $startOfMonth = Carbon::now()->startOfMonth();
 
         // Get statistics
         $totalPembelian = TransaksiPembelian::count();
@@ -49,6 +50,55 @@ class DashboardController extends Controller
             ->orderBy('stok', 'asc')
             ->get(['id_obat', 'NamaObat', 'stok', 'StokMinimum', 'Satuan']);
 
+        // Tambahan statistik kunjungan
+        // Total pasien
+        $totalPasien = Pasien::count();
+
+        // Pasien baru bulan ini
+        $pasienBaruBulanIni = Pasien::where('created_at', '>=', $startOfMonth)->count();
+
+        // Kunjungan hari ini per poli
+        $kunjunganHarian = DB::table('kunjungan')
+            ->select('Poli', DB::raw('COUNT(*) as total'))
+            ->whereDate('TanggalKunjungan', $today->toDateString())
+            ->groupBy('Poli')
+            ->get();
+
+        // Kunjungan bulan ini per poli
+        $kunjunganBulanan = DB::table('kunjungan')
+            ->select('Poli', DB::raw('COUNT(*) as total'))
+            ->whereBetween('TanggalKunjungan', [$startOfMonth, $today])
+            ->groupBy('Poli')
+            ->get();
+
+        // Status kunjungan hari ini
+        $statusKunjungan = DB::table('kunjungan')
+            ->select('Status', DB::raw('COUNT(*) as total'))
+            ->whereDate('TanggalKunjungan', $today->toDateString())
+            ->groupBy('Status')
+            ->get();
+
+        // Data untuk grafik kunjungan 7 hari terakhir
+        $week = [];
+        $kunjunganMingguanData = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $week[] = $date->format('d M');
+
+            $count = DB::table('kunjungan')
+                ->whereDate('TanggalKunjungan', $date->toDateString())
+                ->count();
+
+            $kunjunganMingguanData[] = $count;
+        }
+
+        // Data grafik untuk JavaScript
+        $kunjunganMingguan = [
+            'labels' => $week,
+            'data' => $kunjunganMingguanData
+        ];
+
         return view('dashboard', compact(
             'totalPembelian',
             'totalPenjualan',
@@ -56,7 +106,13 @@ class DashboardController extends Controller
             'totalBarangKeluar',
             'totalKadaluarsa',
             'expiringMeds',
-            'lowStockMeds'
+            'lowStockMeds',
+            'totalPasien',
+            'pasienBaruBulanIni',
+            'kunjunganHarian',
+            'kunjunganBulanan',
+            'statusKunjungan',
+            'kunjunganMingguan'
         ));
     }
 
