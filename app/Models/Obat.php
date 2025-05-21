@@ -13,5 +13,5 @@ class Obat extends Model
     protected $keyType = 'string';
     public $timestamps = false;
     protected $table = 'obat'; // Nama tabel di database
-    protected $fillable = ['id_obat','NamaObat', 'Satuan', 'stok','StokMinumum', 'TglEXP','NoBatch', 'HargaBeli', 'HargaJual']; // Kolom yang bisa diisi
+    protected $fillable = ['id_obat','NamaObat', 'Satuan', 'stok', 'StokMinimum', 'TglEXP','NoBatch', 'HargaBeli', 'HargaJual']; // Kolom yang bisa diisi
 }

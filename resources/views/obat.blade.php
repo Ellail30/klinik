@@ -1,4 +1,4 @@
-@extends('layouts.app')
+                            @extends('layouts.app')
 
 @section('title', 'Daftar Obat')
 
@@ -387,343 +387,343 @@
 
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const scanBarcodeBtn = document.getElementById('scanBarcodeBtn');
-                const idObatInput = document.getElementById('id_obat');
-                const barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
-                    let html5QrCode = null;
+        document.addEventListener('DOMContentLoaded', function () {
+            const scanBarcodeBtn = document.getElementById('scanBarcodeBtn');
+            const idObatInput = document.getElementById('id_obat');
+            const barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+            let html5QrCode = null;
 
-                scanBarcodeBtn.addEventListener('click', function() {
-                    // Open barcode scanner modal
-                    barcodeModal.show();
+            scanBarcodeBtn.addEventListener('click', function () {
+                // Open barcode scanner modal
+                barcodeModal.show();
 
-                    // Initialize barcode scanner
-                    html5QrCode = new Html5Qrcode("barcode-scanner");
-                    Html5Qrcode.getCameras().then(devices => {
-                        if (devices && devices.length) {
-                            const cameraId = devices[0].id;
-                            html5QrCode.start(
-                                cameraId, {
-                                    fps: 10, // frames per second
-                                    qrbox: 250 // size of scanning box
-                                },
-                                onScanSuccess
-                            );
+                // Initialize barcode scanner
+                html5QrCode = new Html5Qrcode("barcode-scanner");
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices && devices.length) {
+                        const cameraId = devices[0].id;
+                        html5QrCode.start(
+                            cameraId, {
+                            fps: 10, // frames per second
+                            qrbox: 250 // size of scanning box
+                        },
+                            onScanSuccess
+                        );
+                    }
+                }).catch(err => {
+                    console.error("Error accessing camera:", err);
+                    alert("Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan.");
+                });
+            });
+
+            function onScanSuccess(decodedText, decodedResult) {
+                // Stop scanning
+                html5QrCode.stop().then(() => {
+                    // Close the modal
+                    barcodeModal.hide();
+
+                    // Set the scanned barcode to the input field
+                    idObatInput.value = decodedText;
+
+                    // Optional: Fetch medicine details based on barcode
+                    fetchMedicineDetails(decodedText);
+                }).catch(err => {
+                    console.error("Error stopping scanner:", err);
+                });
+            }
+
+            function fetchMedicineDetails(barcode) {
+                // AJAX call to Laravel backend to fetch medicine details
+                fetch(`/obat/details-by-barcode?barcode=${encodeURIComponent(barcode)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.medicine) {
+                            // Autofill other fields if medicine exists
+                            document.getElementById('NamaObat').value = data.medicine.nama_obat;
+                            document.getElementById('Satuan').value = data.medicine.satuan;
+                            document.getElementById('stok').value = data.medicine.stok;
+                            document.getElementById('TglEXP').value = data.medicine.tgl_exp;
+                            document.getElementById('NoBatch').value = data.medicine.no_batch;
+                            document.getElementById('HargaBeli').value = data.medicine.harga_beli;
+
+                            // Trigger harga jual calculation
+                            const hargaBeliInput = document.getElementById('HargaBeli');
+                            const event = new Event('input');
+                            hargaBeliInput.dispatchEvent(event);
                         }
-                    }).catch(err => {
-                        console.error("Error accessing camera:", err);
-                        alert("Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan.");
+                    })
+                    .catch(error => {
+                        console.error('Error fetching medicine details:', error);
+                        // Optionally show a toast or alert that no details were found
+                    });
+            }
+
+            // Existing price calculation logic
+            document.getElementById('HargaBeli').addEventListener('input', function () {
+                let hargaBeli = parseFloat(this.value);
+                if (!isNaN(hargaBeli)) {
+                    let hargaJual = hargaBeli * 1.51;
+                    document.getElementById('HargaJual').value = hargaJual.toFixed(0);
+                } else {
+                    document.getElementById('HargaJual').value = '';
+                }
+            });
+        });
+    </script>
+
+    <!-- Modal Edit Obat -->
+    {{-- <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-white shadow-lg rounded-lg max-w-lg mx-auto">
+                <div class="modal-header border-b border-gray-200">
+                    <h5 class="modal-title text-xl font-semibold text-blue-600" id="editObatModalLabel">Edit Obat</h5>
+                    <button type="button" class="btn-close text-blue-600 hover:text-blue-800" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-6">
+                    <form id="editObatForm" method="POST" action="">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="editObatId" name="id_obat">
+                        <div class="mb-4">
+                            <label for="NamaObat" class="block text-sm font-medium text-gray-700">Nama Obat</label>
+                            <input type="text"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editNamaObat" name="NamaObat" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Satuan" class="block text-sm font-medium text-gray-700">Satuan</label>
+                            <select
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editSatuan" name="Satuan" required>
+                                <option value="BOTOL">BOTOL</option>
+                                <option value="TUBE">TUBE</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="stok" class="block text-sm font-medium text-gray-700">Stok</label>
+                            <input type="number"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editStok" name="stok" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="TglEXP" class="block text-sm font-medium text-gray-700">Tanggal Expired</label>
+                            <input type="date"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editTglEXP" name="TglEXP" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="NoBatch" class="block text-sm font-medium text-gray-700">NoBatch</label>
+                            <input type="text"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editNoBatch" name="NoBatch" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="HargaBeli" class="block text-sm font-medium text-gray-700">Harga Beli</label>
+                            <input type="number"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editHargaBeli" name="HargaBeli" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="HargaJual" class="block text-sm font-medium text-gray-700">Harga Jual</label>
+                            <input type="number"
+                                class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                id="editHargaJual" name="HargaJual" required readonly>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button type="button"
+                                class="btn btn-secondary bg-transparent border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-600 hover:text-white focus:ring-4 focus:ring-blue-500"
+                                data-bs-dismiss="modal">Batal</button>
+                            <button type="submit"
+                                class="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 focus:ring-4 focus:ring-blue-500">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    <script>
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const form = document.getElementById('editObatForm');
+                form.action = `/obat/${id}`;
+                // Anda juga bisa load data via AJAX di sini jika perlu isi form otomatis
+            });
+        });
+        document.getElementById("editHargaBeli").addEventListener("input", function () {
+            let HargaBeli = parseFloat(this.value);
+            if (!isNaN(HargaBeli)) {
+                let HargaJual = HargaBeli * 1.51; // Misalnya, markup 20%
+                document.getElementById("editHargaJual").value = Math.round(HargaJual);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dropdown Toggle
+            const dropdownButton = document.getElementById('dropdownSortButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            dropdownButton.addEventListener('click', (e) => {
+                // Prevent click from propagating to window
+                e.stopPropagation();
+                // Toggle visibility with scale transition
+                dropdownMenu.classList.toggle('hidden');
+                dropdownMenu.classList.toggle('scale-95');
+            });
+
+            // Close the dropdown if clicked outside
+            window.addEventListener('click', (e) => {
+                if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                    dropdownMenu.classList.add('scale-95');
+                }
+            });
+
+            // Check if there's a session success message to show a notification
+            @if (session('success'))
+                Swal.fire({
+                    title: '{{ session('success') }}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#007bff', // Blue color for 'Ok' button
+                });
+            @endif
+
+            // Check if there's a validation error message for duplicate data
+            @if ($errors->has('id_obat'))
+                Swal.fire({
+                    title: 'Gagal! Kode Obat sudah ada.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#007bff', // Blue color for 'Ok' button
+                });
+            @endif
+
+                    // Handle Delete Button
+                    const deleteBtns = document.querySelectorAll('.delete-btn');
+            deleteBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const obatId = btn.getAttribute('data-id');
+                    const obatName = btn.getAttribute('data-name');
+                    Swal.fire({
+                        title: `Apakah Anda yakin ingin menghapus obat "${obatName}"?`,
+                        text: "Tindakan ini tidak dapat dibatalkan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#007bff',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Tidak'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = `/obat/${obatId}`;
+                            const csrfToken = document.createElement('input');
+                            csrfToken.type = 'hidden';
+                            csrfToken.name = '_token';
+                            csrfToken.value = '{{ csrf_token() }}';
+                            form.appendChild(csrfToken);
+                            const methodInput = document.createElement('input');
+                            methodInput.type = 'hidden';
+                            methodInput.name = '_method';
+                            methodInput.value = 'DELETE';
+                            form.appendChild(methodInput);
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
                     });
                 });
+            });
 
-                function onScanSuccess(decodedText, decodedResult) {
-                    // Stop scanning
-                    html5QrCode.stop().then(() => {
-                        // Close the modal
-                        barcodeModal.hide();
+            // Handle Edit Button
+            const editBtns = document.querySelectorAll('.edit-btn');
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const obatId = btn.getAttribute('data-id');
 
-                        // Set the scanned barcode to the input field
-                        idObatInput.value = decodedText;
-
-                        // Optional: Fetch medicine details based on barcode
-                        fetchMedicineDetails(decodedText);
-                    }).catch(err => {
-                        console.error("Error stopping scanner:", err);
-                    });
-                }
-
-                function fetchMedicineDetails(barcode) {
-                    // AJAX call to Laravel backend to fetch medicine details
-                    fetch(`/obat/details-by-barcode?barcode=${encodeURIComponent(barcode)}`)
+                    fetch(`/obat/${obatId}/edit`)
                         .then(response => response.json())
                         .then(data => {
-                            if (data.medicine) {
-                                // Autofill other fields if medicine exists
-                                document.getElementById('NamaObat').value = data.medicine.nama_obat;
-                                document.getElementById('Satuan').value = data.medicine.satuan;
-                                document.getElementById('stok').value = data.medicine.stok;
-                                document.getElementById('TglEXP').value = data.medicine.tgl_exp;
-                                document.getElementById('NoBatch').value = data.medicine.no_batch;
-                                document.getElementById('HargaBeli').value = data.medicine.harga_beli;
+                            if (data) {
+                                // Isi form dengan data dari backend
+                                document.getElementById('editObatId').value = data.id_obat;
+                                document.getElementById('editNamaObat').value = data.NamaObat;
+                                document.getElementById('editSatuan').value = data.Satuan;
+                                document.getElementById('editStok').value = data.stok;
+                                document.getElementById('editStokMinimum').value = data.StokMinimum;
+                                document.getElementById('editTglEXP').value = data.TglExp; // Ubah dari TglEXP menjadi TglExp
+                                document.getElementById('editNoBatch').value = data.NoBatch;
+                                document.getElementById('editHargaBeli').value = data.HargaBeli;
+                                document.getElementById('editHargaJual').value = data.HargaJual;
 
-                                // Trigger harga jual calculation
-                                const hargaBeliInput = document.getElementById('HargaBeli');
-                                const event = new Event('input');
-                                hargaBeliInput.dispatchEvent(event);
+                                // Set form action ke endpoint PUT
+                                const form = document.getElementById('editObatForm');
+                                form.action = `/obat/${obatId}`;
+                            } else {
+                                Swal.fire({
+                                    title: 'Data tidak ditemukan.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok',
+                                    confirmButtonColor: '#007bff',
+                                });
                             }
                         })
                         .catch(error => {
-                            console.error('Error fetching medicine details:', error);
-                            // Optionally show a toast or alert that no details were found
-                        });
-                }
-
-                // Existing price calculation logic
-                document.getElementById('HargaBeli').addEventListener('input', function() {
-                    let hargaBeli = parseFloat(this.value);
-                    if (!isNaN(hargaBeli)) {
-                        let hargaJual = hargaBeli * 1.51;
-                        document.getElementById('HargaJual').value = hargaJual.toFixed(0);
-                    } else {
-                        document.getElementById('HargaJual').value = '';
-                    }
-                });
-            });
-        </script>
-
-        <!-- Modal Edit Obat -->
-        {{-- <div class="modal fade" id="editObatModal" tabindex="-1" aria-labelledby="editObatModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content bg-white shadow-lg rounded-lg max-w-lg mx-auto">
-                    <div class="modal-header border-b border-gray-200">
-                        <h5 class="modal-title text-xl font-semibold text-blue-600" id="editObatModalLabel">Edit Obat</h5>
-                        <button type="button" class="btn-close text-blue-600 hover:text-blue-800" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-6">
-                        <form id="editObatForm" method="POST" action="">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" id="editObatId" name="id_obat">
-                            <div class="mb-4">
-                                <label for="NamaObat" class="block text-sm font-medium text-gray-700">Nama Obat</label>
-                                <input type="text"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editNamaObat" name="NamaObat" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="Satuan" class="block text-sm font-medium text-gray-700">Satuan</label>
-                                <select
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editSatuan" name="Satuan" required>
-                                    <option value="BOTOL">BOTOL</option>
-                                    <option value="TUBE">TUBE</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label for="stok" class="block text-sm font-medium text-gray-700">Stok</label>
-                                <input type="number"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editStok" name="stok" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="TglEXP" class="block text-sm font-medium text-gray-700">Tanggal Expired</label>
-                                <input type="date"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editTglEXP" name="TglEXP" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="NoBatch" class="block text-sm font-medium text-gray-700">NoBatch</label>
-                                <input type="text"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editNoBatch" name="NoBatch" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="HargaBeli" class="block text-sm font-medium text-gray-700">Harga Beli</label>
-                                <input type="number"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editHargaBeli" name="HargaBeli" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="HargaJual" class="block text-sm font-medium text-gray-700">Harga Jual</label>
-                                <input type="number"
-                                    class="form-control mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    id="editHargaJual" name="HargaJual" required readonly>
-                            </div>
-                            <div class="flex justify-end space-x-2">
-                                <button type="button"
-                                    class="btn btn-secondary bg-transparent border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-600 hover:text-white focus:ring-4 focus:ring-blue-500"
-                                    data-bs-dismiss="modal">Batal</button>
-                                <button type="submit"
-                                    class="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 focus:ring-4 focus:ring-blue-500">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
-        <script>
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    const form = document.getElementById('editObatForm');
-                    form.action = `/obat/${id}`;
-                    // Anda juga bisa load data via AJAX di sini jika perlu isi form otomatis
-                });
-            });
-            document.getElementById("editHargaBeli").addEventListener("input", function() {
-                let HargaBeli = parseFloat(this.value);
-                if (!isNaN(HargaBeli)) {
-                    let HargaJual = HargaBeli * 1.51; // Misalnya, markup 20%
-                    document.getElementById("editHargaJual").value = Math.round(HargaJual);
-                }
-            });
-
-            document.addEventListener('DOMContentLoaded', () => {
-                // Dropdown Toggle
-                const dropdownButton = document.getElementById('dropdownSortButton');
-                const dropdownMenu = document.getElementById('dropdownMenu');
-
-                dropdownButton.addEventListener('click', (e) => {
-                    // Prevent click from propagating to window
-                    e.stopPropagation();
-                    // Toggle visibility with scale transition
-                    dropdownMenu.classList.toggle('hidden');
-                    dropdownMenu.classList.toggle('scale-95');
-                });
-
-                // Close the dropdown if clicked outside
-                window.addEventListener('click', (e) => {
-                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                        dropdownMenu.classList.add('hidden');
-                        dropdownMenu.classList.add('scale-95');
-                    }
-                });
-
-                // Check if there's a session success message to show a notification
-                @if (session('success'))
-                    Swal.fire({
-                        title: '{{ session('success') }}',
-                        icon: 'success',
-                        confirmButtonText: 'Ok',
-                        confirmButtonColor: '#007bff', // Blue color for 'Ok' button
-                    });
-                @endif
-
-                // Check if there's a validation error message for duplicate data
-                @if ($errors->has('id_obat'))
-                    Swal.fire({
-                        title: 'Gagal! Kode Obat sudah ada.',
-                        icon: 'error',
-                        confirmButtonText: 'Ok',
-                        confirmButtonColor: '#007bff', // Blue color for 'Ok' button
-                    });
-                @endif
-
-                // Handle Delete Button
-                const deleteBtns = document.querySelectorAll('.delete-btn');
-                deleteBtns.forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const obatId = btn.getAttribute('data-id');
-                        const obatName = btn.getAttribute('data-name');
-                        Swal.fire({
-                            title: `Apakah Anda yakin ingin menghapus obat "${obatName}"?`,
-                            text: "Tindakan ini tidak dapat dibatalkan!",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#007bff',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Ya, Hapus!',
-                            cancelButtonText: 'Tidak'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const form = document.createElement('form');
-                                form.method = 'POST';
-                                form.action = `/obat/${obatId}`;
-                                const csrfToken = document.createElement('input');
-                                csrfToken.type = 'hidden';
-                                csrfToken.name = '_token';
-                                csrfToken.value = '{{ csrf_token() }}';
-                                form.appendChild(csrfToken);
-                                const methodInput = document.createElement('input');
-                                methodInput.type = 'hidden';
-                                methodInput.name = '_method';
-                                methodInput.value = 'DELETE';
-                                form.appendChild(methodInput);
-                                document.body.appendChild(form);
-                                form.submit();
-                            }
-                        });
-                    });
-                });
-
-                // Handle Edit Button
-                const editBtns = document.querySelectorAll('.edit-btn');
-                editBtns.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const obatId = btn.getAttribute('data-id');
-
-                        fetch(`/obat/${obatId}/edit`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data) {
-                                    // Isi form dengan data dari backend
-                                    document.getElementById('editObatId').value = data.id_obat;
-                                    document.getElementById('editNamaObat').value = data.NamaObat;
-                                    document.getElementById('editSatuan').value = data.Satuan;
-                                    document.getElementById('editStok').value = data.stok;
-                                    document.getElementById('editStokMinimum').value = data.StokMinimum;
-                                    document.getElementById('editTglEXP').value = data.TglEXP;
-                                    document.getElementById('editNoBatch').value = data.NoBatch;
-                                    document.getElementById('editHargaBeli').value = data.HargaBeli;
-                                    document.getElementById('editHargaJual').value = data.HargaJual;
-
-                                    // Set form action ke endpoint PUT
-                                    const form = document.getElementById('editObatForm');
-                                    form.action = `/obat/${obatId}`;
-                                } else {
-                                    Swal.fire({
-                                        title: 'Data tidak ditemukan.',
-                                        icon: 'error',
-                                        confirmButtonText: 'Ok',
-                                        confirmButtonColor: '#007bff',
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Gagal mengambil data:', error);
-                                Swal.fire({
-                                    title: 'Terjadi kesalahan.',
-                                    text: 'Gagal mengambil data obat.',
-                                    icon: 'error',
-                                    confirmButtonText: 'Ok',
-                                    confirmButtonColor: '#007bff',
-                                });
+                            console.error('Gagal mengambil data:', error);
+                            Swal.fire({
+                                title: 'Terjadi kesalahan.',
+                                text: 'Gagal mengambil data obat.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                                confirmButtonColor: '#007bff',
                             });
-                    });
-                });
-
-                // Handle form submission for updating drug
-                document.getElementById('editObatForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    const jsonData = {};
-                    formData.forEach((value, key) => {
-                        jsonData[key] = value;
-                    });
-                    fetch(this.action, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(jsonData)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    title: 'Obat ' + data.NamaObat + ' berhasil diperbarui!',
-                                    icon: 'success',
-                                    confirmButtonText: 'Ok',
-                                    confirmButtonColor: '#007bff',
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else if (data.error) {
-                                Swal.fire({
-                                    title: data.error,
-                                    icon: 'error',
-                                    confirmButtonText: 'Ok',
-                                    confirmButtonColor: '#007bff',
-                                });
-                            }
-                        })
-                        .catch(error => console.error('Error updating drug:', error));
+                        });
                 });
             });
-        </script>
 
-        <!-- Sertakan JS untuk modal dan interaksi lainnya -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            // Handle form submission for updating drug
+            document.getElementById('editObatForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const jsonData = {};
+                formData.forEach((value, key) => {
+                    jsonData[key] = value;
+                });
+                fetch(this.action, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Obat ' + data.NamaObat + ' berhasil diperbarui!',
+                                icon: 'success',
+                                confirmButtonText: 'Ok',
+                                confirmButtonColor: '#007bff',
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else if (data.error) {
+                            Swal.fire({
+                                title: data.error,
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                                confirmButtonColor: '#007bff',
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error updating drug:', error));
+            });
+        });
+    </script>
+
+    <!-- Sertakan JS untuk modal dan interaksi lainnya -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

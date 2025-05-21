@@ -192,10 +192,10 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $obat->id_obat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->NamaObat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->stok }} {{ $obat->Satuan }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->StokMinumum }} {{ $obat->Satuan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $obat->StokMinimum }} {{ $obat->Satuan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
-                                            $percentage = ($obat->stok / $obat->StokMinumum) * 100;
+                                            $percentage = ($obat->stok / $obat->StokMinimum) * 100;
                                         @endphp
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                             {{ $percentage <= 50 ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800' }}">

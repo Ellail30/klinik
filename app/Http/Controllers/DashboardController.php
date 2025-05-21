@@ -45,9 +45,9 @@ class DashboardController extends Controller
             ->get(['id_obat', 'NamaObat', 'TglExp', 'stok', 'Satuan']);
 
         // Get medications that need restock (stock less than minimum required)
-        $lowStockMeds = Obat::whereRaw('stok < StokMinumum')
+        $lowStockMeds = Obat::whereRaw('stok < StokMinimum')
             ->orderBy('stok', 'asc')
-            ->get(['id_obat', 'NamaObat', 'stok', 'StokMinumum', 'Satuan']);
+            ->get(['id_obat', 'NamaObat', 'stok', 'StokMinimum', 'Satuan']);
 
         return view('dashboard', compact(
             'totalPembelian',
