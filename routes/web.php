@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\ObatMasukController;
 use App\Http\Controllers\ObatKeluarController;
+use App\Http\Controllers\PersediaanController;
 use App\Http\Controllers\ConfigUsersController;
 use App\Http\Controllers\PendaftaranController;
 
@@ -126,9 +127,7 @@ Route::prefix('obat-masuk')->group(function () {
 });
 Route::get('/cari-barcode', [ObatMasukController::class, 'cariBarcode']);
 
-Route::get('/obat_kadaluwarsa', function () {
-    return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa
-});
+
 
 
 Route::get('/laporan-obat-masuk/export-pdf', [LaporanController::class, 'exportPdfObatMasuk'])->name('obat-masuk.export');
@@ -141,14 +140,22 @@ Route::get('/laporan-obat-keluar/export-pdf', [LaporanController::class, 'export
 
 Route::get('/laporan-obat-keluar/export-pdf/{id}', [LaporanController::class, 'exportPdfDetailObatKeluar'])->name('obat-masuk.detail.export');
 
+Route::get('laporan-persediaan', [PersediaanController::class, 'index'])->name('persediaan.index');
+Route::get('laporan-persediaan/export-pdf', [PersediaanController::class, 'exportPdf'])->name('persediaan.export-pdf');
 
 
-Route::get('/laporan_keluar', function () {
-    return view('laporan_keluar'); // Mengarahkan ke halaman laporan obat keluar
-});
-
-Route::get('/laporan_persediaan', function () {
-    return view('laporan_persediaan'); // Mengarahkan ke halaman laporan persediaan
-});
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+// Route::get('/obat_kadaluwarsa', function () {
+//     return view('obat_kadaluwarsa'); // Mengarahkan ke halaman obat kadaluwarsa
+// });
+
+// Route::get('/laporan_keluar', function () {
+//     return view('laporan_keluar'); // Mengarahkan ke halaman laporan obat keluar
+// });
+
+// Route::get('/laporan_persediaan', function () {
+//     return view('laporan_persediaan'); // Mengarahkan ke halaman laporan persediaan
+// });

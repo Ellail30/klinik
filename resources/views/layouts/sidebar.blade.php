@@ -160,42 +160,40 @@ $role = Auth::user()->role;
                         </a>
                     </li>
                 @endif
-            
-                {{-- LAPORAN (PIMPINAN) --}}
-                @if ($role == 'pimpinan')
-                    @php
-    $isActive = request()->is('laporan_*');
-                    @endphp
-                    <li>
-                        <button
-                            class="flex items-center justify-between w-full px-4 py-3 rounded-lg transition {{ $isActive ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
-                            <span class="flex items-center space-x-3">
-                                <i class='bx bxs-file text-2xl'></i>
-                                <span class="text-base">Laporan</span>
-                            </span>
-                            <i class='bx bx-chevron-down'></i>
-                        </button>
-                        <ul
-                            class="{{ $isActive ? '' : 'hidden' }} space-y-2 pl-6 mt-2 transition-all duration-300 ease-in-out {{ $isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-10px]' }}">
-                            <li>
-                                <a href="{{ url('/laporan_keluar') }}"
-                                    class="block px-4 py-2 rounded-lg {{ request()->is('laporan_keluar') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Laporan
-                                    Obat Keluar</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/laporan_masuk') }}"
-                                    class="block px-4 py-2 rounded-lg {{ request()->is('laporan_masuk') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Laporan
-                                    Obat Masuk</a>
-                            </li>
-                            <li>
-                                <a href="{{ url('/laporan_persediaan') }}"
-                                    class="block px-4 py-2 rounded-lg {{ request()->is('laporan_persediaan') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Laporan
-                                    Persediaan</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endif
-            
+@if ($role == 'pimpinan')
+    @php
+        $isActive = request()->is('obat-masuk*') || request()->is('apoteker*');
+    @endphp
+    <li>
+        <button
+            class="flex items-center justify-between w-full px-4 py-3 rounded-lg transition {{ $isActive ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+            <span class="flex items-center space-x-3">
+                <i class='bx bxs-inbox text-2xl'></i>
+                <span class="text-base">Laporan</span>
+            </span>
+            <i class='bx bx-chevron-down'></i>
+        </button>
+        <ul
+            class="{{ $isActive ? '' : 'hidden' }} space-y-2 pl-6 mt-2 transition-all duration-300 ease-in-out {{ $isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-10px]' }}">
+            <li>
+                <a href="{{ route('obat-masuk.index') }}"
+                    class="block px-4 py-2 rounded-lg {{ request()->is('obat-masuk*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
+                    Masuk</a>
+            </li>
+            <li>
+                <a href="{{ route('apoteker.index') }}"
+                    class="block px-4 py-2 rounded-lg {{ request()->is('apoteker*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Obat
+                    Keluar</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="{{ route('persediaan.index') }}"
+            class="block px-4 py-2 rounded-lg {{ request()->is('laporan-persediaan*') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">Persediaan</a>
+    </li>
+    </ul>
+    </li>
+@endif
                 {{-- AKUN --}}
                 {{-- <li>
                     @php
